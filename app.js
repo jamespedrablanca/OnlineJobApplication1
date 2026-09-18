@@ -1,557 +1,505 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-    // =====================================================
-    // MAIN ELEMENTS
-    // =====================================================
-
     const landingPage = document.querySelector(".landing-page");
     const dashboard = document.querySelector("#dashboard");
     const authBackdrop = document.querySelector("[data-auth-backdrop]");
 
-    const savedUser = localStorage.getItem("careerlyUser");
-
-
-    // Hide original screens while JavaScript loads
+    // Hide everything at startup
     if (landingPage) landingPage.hidden = true;
     if (dashboard) dashboard.hidden = true;
     if (authBackdrop) authBackdrop.hidden = true;
 
+    // ==========================================
+    // USER STORAGE
+    // ==========================================
 
-    // =====================================================
-    // CREATE FULL-SCREEN SIGNUP SCREEN
-    // =====================================================
+    function getUser() {
+        const user = localStorage.getItem("careerlyUser");
+
+        try {
+            return user ? JSON.parse(user) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function getRegisteredAccount() {
+        const account = localStorage.getItem("careerlyAccount");
+
+        try {
+            return account ? JSON.parse(account) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    // ==========================================
+    // SIGNUP SCREEN
+    // ==========================================
 
     function createSignupScreen() {
+        removeSignupScreen();
+        removeLoginScreen();
 
-        // Prevent duplicate signup screens
-        const existingScreen =
-            document.querySelector("#signup-screen");
+        const signupScreen = document.createElement("div");
+        signupScreen.id = "signup-screen";
 
-        if (existingScreen) {
-            return;
-        }
-
-
-        const screen = document.createElement("div");
-
-        screen.id = "signup-screen";
-
-        screen.innerHTML = `
+        signupScreen.innerHTML = `
             <div class="signup-container">
 
-                <div class="signup-logo">
-                    <span>✦</span>
-                    <strong>careerly</strong>
+                <div class="signup-left">
+                    <div class="signup-brand">Careerly</div>
+
+                    <div class="signup-content">
+                        <span class="signup-label">GET STARTED</span>
+
+                        <h1>Create your<br>Careerly account.</h1>
+
+                        <p>
+                            Find opportunities that fit your skills,
+                            goals, and the way you want to work.
+                        </p>
+
+                        <form id="signup-screen-form">
+
+                            <label for="signup-name">Full name</label>
+                            <input
+                                type="text"
+                                id="signup-name"
+                                name="signupName"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                required
+                            >
+
+                            <label for="signup-email">Email address</label>
+                            <input
+                                type="email"
+                                id="signup-email"
+                                name="signupEmail"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required
+                            >
+
+                            <label for="signup-password">Password</label>
+                            <input
+                                type="password"
+                                id="signup-password"
+                                name="signupPassword"
+                                placeholder="At least 6 characters"
+                                minlength="6"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <p id="signup-error" class="signup-error"></p>
+
+                            <button type="submit" class="signup-submit">
+                                Create account
+                            </button>
+
+                        </form>
+
+                        <p class="signup-login-text">
+                            Already have an account?
+                            <button type="button" id="go-to-login">
+                                Log in
+                            </button>
+                        </p>
+                    </div>
                 </div>
 
-                <div class="signup-content">
+                <div class="signup-right">
+                    <div class="signup-art">
 
-                    <p class="signup-eyebrow">
-                        WELCOME TO CAREERLY
-                    </p>
+                        <div class="art-circle art-circle-one"></div>
+                        <div class="art-circle art-circle-two"></div>
 
-                    <h1>Create your account.</h1>
+                        <div class="art-card art-card-one">
+                            <span>✓</span>
+                            Find your next opportunity
+                        </div>
 
-                    <p class="signup-description">
-                        Start discovering meaningful opportunities and
-                        take the next step in your career.
-                    </p>
+                        <div class="art-card art-card-two">
+                            <span>★</span>
+                            Work that feels like you
+                        </div>
 
-                    <form id="signup-screen-form">
-
-                        <label for="screen-name">
-                            Full name
-                        </label>
-
-                        <input
-                            type="text"
-                            id="screen-name"
-                            placeholder="Jordan Davis"
-                            autocomplete="name"
-                            required
-                        >
-
-                        <label for="screen-email">
-                            Email address
-                        </label>
-
-                        <input
-                            type="email"
-                            id="screen-email"
-                            placeholder="you@example.com"
-                            autocomplete="email"
-                            required
-                        >
-
-                        <label for="screen-password">
-                            Password
-                        </label>
-
-                        <input
-                            type="password"
-                            id="screen-password"
-                            placeholder="At least 6 characters"
-                            minlength="6"
-                            autocomplete="new-password"
-                            required
-                        >
-
-                        <button type="submit">
-                            Create account
-                            <span>→</span>
-                        </button>
-
-                        <p id="signup-error"></p>
-
-                    </form>
-
-                </div>
-
-                <div class="signup-decoration">
-
-                    <div class="signup-sun"></div>
-
-                    <div class="signup-card signup-card-back"></div>
-
-                    <div class="signup-card signup-card-front">
-
-                        <small>
-                            YOUR NEXT ROLE
-                        </small>
-
-                        <strong>
-                            Senior Product<br>
-                            Designer
-                        </strong>
-
-                        <span>
-                            Lumen Studio · New York
-                        </span>
+                        <div class="art-person"></div>
 
                     </div>
+                </div>
 
-                    <span class="signup-star">
-                        ✦
-                    </span>
+            </div>
+        `;
+
+        document.body.appendChild(signupScreen);
+
+        injectSignupStyles();
+
+        const form = document.querySelector("#signup-screen-form");
+
+        if (form) {
+            form.addEventListener("submit", handleSignup);
+        }
+
+        const loginButton =
+            document.querySelector("#go-to-login");
+
+        if (loginButton) {
+            loginButton.addEventListener(
+                "click",
+                createLoginScreen
+            );
+        }
+    }
+
+    // ==========================================
+    // LOGIN SCREEN
+    // ==========================================
+
+    function createLoginScreen() {
+        removeSignupScreen();
+        removeLoginScreen();
+
+        const loginScreen = document.createElement("div");
+        loginScreen.id = "login-screen";
+
+        loginScreen.innerHTML = `
+            <div class="login-container">
+
+                <div class="login-left">
+
+                    <div class="login-brand">Careerly</div>
+
+                    <div class="login-content">
+
+                        <span class="login-label">
+                            WELCOME BACK
+                        </span>
+
+                        <h1>Welcome<br>back.</h1>
+
+                        <p>
+                            Log in to continue your journey
+                            toward work that feels like you.
+                        </p>
+
+                        <form id="login-screen-form">
+
+                            <label for="login-email">
+                                Email address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="login-email"
+                                name="loginEmail"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required
+                            >
+
+                            <label for="login-password">
+                                Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="login-password"
+                                name="loginPassword"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <p id="login-error" class="login-error"></p>
+
+                            <button
+                                type="submit"
+                                class="login-submit"
+                            >
+                                Log in
+                            </button>
+
+                        </form>
+
+                        <p class="login-signup-text">
+                            Don't have an account?
+                            <button
+                                type="button"
+                                id="go-to-signup"
+                            >
+                                Create account
+                            </button>
+                        </p>
+
+                    </div>
+                </div>
+
+                <div class="login-right">
+
+                    <div class="login-art">
+
+                        <div class="login-circle login-circle-one"></div>
+                        <div class="login-circle login-circle-two"></div>
+
+                        <div class="login-card login-card-one">
+                            <span>✓</span>
+                            Your career starts here
+                        </div>
+
+                        <div class="login-card login-card-two">
+                            <span>★</span>
+                            Discover new possibilities
+                        </div>
+
+                        <div class="login-person"></div>
+
+                    </div>
 
                 </div>
 
             </div>
         `;
 
+        document.body.appendChild(loginScreen);
 
-        // =================================================
-        // SIGNUP SCREEN CSS
-        // =================================================
-
-        const style = document.createElement("style");
-
-        style.id = "signup-screen-style";
-
-        style.textContent = `
-
-            #signup-screen {
-                position: fixed;
-                inset: 0;
-                z-index: 9999;
-                background: #f6f7f3;
-                overflow-y: auto;
-                font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-                color: #27323b;
-            }
-
-            .signup-container {
-                min-height: 100vh;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                align-items: center;
-                gap: 70px;
-                max-width: 1100px;
-                margin: auto;
-                padding: 45px;
-                position: relative;
-                box-sizing: border-box;
-            }
-
-            .signup-logo {
-                position: absolute;
-                top: 35px;
-                left: 45px;
-                display: flex;
-                align-items: center;
-                gap: 9px;
-                font: 700 22px Georgia, serif;
-            }
-
-            .signup-logo span {
-                display: grid;
-                place-items: center;
-                width: 28px;
-                height: 28px;
-                color: white;
-                background: #ec765e;
-                border-radius: 9px 9px 9px 2px;
-                transform: rotate(-8deg);
-                font: 16px Arial, sans-serif;
-            }
-
-            .signup-content {
-                max-width: 430px;
-                margin-top: 35px;
-            }
-
-            .signup-eyebrow {
-                margin: 0 0 10px;
-                color: #63917a;
-                font-size: 10px;
-                font-weight: 700;
-                letter-spacing: .1em;
-            }
-
-            .signup-content h1 {
-                margin: 0;
-                color: #264d41;
-                font: 400 55px/.98 Georgia, serif;
-                letter-spacing: -2px;
-            }
-
-            .signup-description {
-                margin: 22px 0 28px;
-                color: #788680;
-                font-size: 13px;
-                line-height: 1.7;
-                max-width: 380px;
-            }
-
-            #signup-screen-form {
-                display: grid;
-                gap: 8px;
-            }
-
-            #signup-screen-form label {
-                margin-top: 7px;
-                color: #62706b;
-                font-size: 10px;
-                font-weight: 700;
-            }
-
-            #signup-screen-form input {
-                width: 100%;
-                height: 43px;
-                padding: 0 12px;
-                border: 1px solid #dfe5e0;
-                border-radius: 7px;
-                outline: none;
-                background: white;
-                color: #27323b;
-                font-size: 11px;
-                box-sizing: border-box;
-            }
-
-            #signup-screen-form input:focus {
-                border-color: #6bb18e;
-                box-shadow: 0 0 0 3px #e4f3e8;
-            }
-
-            #signup-screen-form button {
-                height: 45px;
-                margin-top: 13px;
-                border: 0;
-                border-radius: 7px;
-                background: #287b5c;
-                color: white;
-                cursor: pointer;
-                font-size: 11px;
-                font-weight: 700;
-                transition: .2s ease;
-            }
-
-            #signup-screen-form button:hover {
-                background: #226a4f;
-                transform: translateY(-1px);
-            }
-
-            #signup-screen-form button span {
-                margin-left: 18px;
-                font-size: 16px;
-            }
-
-            #signup-error {
-                min-height: 12px;
-                margin: 5px 0 0;
-                color: #ec765e;
-                font-size: 9px;
-            }
-
-            .signup-decoration {
-                position: relative;
-                min-height: 500px;
-                background: #dcefe1;
-                border-radius: 48% 48% 14px 14px;
-                overflow: hidden;
-            }
-
-            .signup-sun {
-                position: absolute;
-                top: 65px;
-                left: 25%;
-                width: 180px;
-                height: 180px;
-                background: #f5b87e;
-                border-radius: 50%;
-            }
-
-            .signup-card {
-                position: absolute;
-                border-radius: 12px;
-            }
-
-            .signup-card-back {
-                top: 120px;
-                left: 23%;
-                width: 320px;
-                height: 200px;
-                background: #b7dac1;
-                transform: rotate(9deg);
-            }
-
-            .signup-card-front {
-                top: 145px;
-                left: 18%;
-                width: 320px;
-                height: 210px;
-                padding: 24px;
-                background: white;
-                box-shadow: 0 20px 36px rgba(44,79,62,.13);
-                transform: rotate(-8deg);
-                display: grid;
-                box-sizing: border-box;
-            }
-
-            .signup-card-front small {
-                color: #ec765e;
-                font-size: 8px;
-                font-weight: 800;
-                letter-spacing: .12em;
-            }
-
-            .signup-card-front strong {
-                color: #2b3b3c;
-                font: 600 27px/1.03 Georgia, serif;
-            }
-
-            .signup-card-front span {
-                align-self: end;
-                color: #8b9892;
-                font-size: 10px;
-            }
-
-            .signup-star {
-                position: absolute;
-                top: 100px;
-                right: 17%;
-                color: #ec765e;
-                font-size: 24px;
-            }
-
-            @media (max-width: 750px) {
-
-                .signup-container {
-                    display: block;
-                    padding: 30px 22px;
-                }
-
-                .signup-logo {
-                    position: relative;
-                    top: auto;
-                    left: auto;
-                    margin-bottom: 75px;
-                }
-
-                .signup-content {
-                    margin: 0 auto;
-                }
-
-                .signup-content h1 {
-                    font-size: 48px;
-                }
-
-                .signup-decoration {
-                    display: none;
-                }
-            }
-        `;
-
-        document.head.appendChild(style);
-        document.body.appendChild(screen);
-
-
-        // =================================================
-        // SIGNUP FORM
-        // =================================================
+        injectLoginStyles();
 
         const form =
-            document.querySelector("#signup-screen-form");
+            document.querySelector("#login-screen-form");
 
-        const nameInput =
-            document.querySelector("#screen-name");
+        if (form) {
+            form.addEventListener("submit", handleLogin);
+        }
 
-        const emailInput =
-            document.querySelector("#screen-email");
+        const signupButton =
+            document.querySelector("#go-to-signup");
 
-        const passwordInput =
-            document.querySelector("#screen-password");
-
-        const error =
-            document.querySelector("#signup-error");
-
-
-        form.addEventListener("submit", (event) => {
-
-            event.preventDefault();
-
-
-            const name = nameInput.value.trim();
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-
-
-            // Validation
-            if (name.length < 2) {
-
-                error.textContent =
-                    "Please enter your full name.";
-
-                nameInput.focus();
-
-                return;
-            }
-
-
-            if (!emailInput.checkValidity()) {
-
-                error.textContent =
-                    "Please enter a valid email address.";
-
-                emailInput.focus();
-
-                return;
-            }
-
-
-            if (password.length < 6) {
-
-                error.textContent =
-                    "Password must be at least 6 characters.";
-
-                passwordInput.focus();
-
-                return;
-            }
-
-
-            // Create user object
-            const user = {
-                name: name,
-                email: email
-            };
-
-
-            // Save account
-            localStorage.setItem(
-                "careerlyUser",
-                JSON.stringify(user)
+        if (signupButton) {
+            signupButton.addEventListener(
+                "click",
+                createSignupScreen
             );
-
-
-            // Remove signup screen
-            screen.remove();
-
-
-            // Show dashboard
-            showDashboard(user);
-        });
+        }
     }
 
+    // ==========================================
+    // HANDLE SIGNUP
+    // ==========================================
 
-    // =====================================================
+    function handleSignup(event) {
+        event.preventDefault();
+
+        const form = event.currentTarget;
+
+        const nameInput =
+            form.querySelector("#signup-name");
+
+        const emailInput =
+            form.querySelector("#signup-email");
+
+        const passwordInput =
+            form.querySelector("#signup-password");
+
+        const error =
+            form.querySelector("#signup-error");
+
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
+
+        // Clear previous error
+        error.textContent = "";
+
+        if (name.length < 2) {
+            error.textContent =
+                "Please enter your full name.";
+            nameInput.focus();
+            return;
+        }
+
+        if (!emailInput.checkValidity()) {
+            error.textContent =
+                "Please enter a valid email address.";
+            emailInput.focus();
+            return;
+        }
+
+        if (password.length < 6) {
+            error.textContent =
+                "Password must be at least 6 characters.";
+            passwordInput.focus();
+            return;
+        }
+
+        // Save the registered account
+        const account = {
+            name: name,
+            email: email,
+            password: password
+        };
+
+        localStorage.setItem(
+            "careerlyAccount",
+            JSON.stringify(account)
+        );
+
+        // Do NOT log in automatically.
+        // Send the user to the login page.
+        createLoginScreen();
+
+        // Pre-fill the registered email
+        const loginEmail =
+            document.querySelector("#login-email");
+
+        if (loginEmail) {
+            loginEmail.value = email;
+
+            setTimeout(() => {
+                const loginPassword =
+                    document.querySelector("#login-password");
+
+                if (loginPassword) {
+                    loginPassword.focus();
+                }
+            }, 50);
+        }
+    }
+
+    // ==========================================
+    // HANDLE LOGIN
+    // ==========================================
+
+    function handleLogin(event) {
+        event.preventDefault();
+
+        const form = event.currentTarget;
+
+        const emailInput =
+            form.querySelector("#login-email");
+
+        const passwordInput =
+            form.querySelector("#login-password");
+
+        const error =
+            form.querySelector("#login-error");
+
+        const email =
+            emailInput.value.trim().toLowerCase();
+
+        const password =
+            passwordInput.value;
+
+        error.textContent = "";
+
+        const account = getRegisteredAccount();
+
+        if (!account) {
+            error.textContent =
+                "No account found. Please create an account first.";
+            return;
+        }
+
+        if (
+            email !== account.email ||
+            password !== account.password
+        ) {
+            error.textContent =
+                "Incorrect email or password.";
+            passwordInput.focus();
+            return;
+        }
+
+        // Successful login
+        const user = {
+            name: account.name,
+            email: account.email
+        };
+
+        localStorage.setItem(
+            "careerlyUser",
+            JSON.stringify(user)
+        );
+
+        showDashboard(user);
+    }
+
+    // ==========================================
     // SHOW DASHBOARD
-    // =====================================================
+    // ==========================================
 
     function showDashboard(user) {
+        removeSignupScreen();
+        removeLoginScreen();
 
-        if (!dashboard) return;
+        if (landingPage) {
+            landingPage.hidden = true;
+        }
 
-        dashboard.hidden = false;
+        if (authBackdrop) {
+            authBackdrop.hidden = true;
+        }
+
+        if (dashboard) {
+            dashboard.hidden = false;
+        }
 
         updateUser(user);
-
         updateLoggedInNavigation();
-
         setupDashboardFunctions();
     }
 
-
-    // =====================================================
+    // ==========================================
     // UPDATE USER INFORMATION
-    // =====================================================
+    // ==========================================
 
     function updateUser(user) {
-
         if (!user) return;
 
+        document
+            .querySelectorAll("[data-user-name]")
+            .forEach(element => {
+                element.textContent = user.name;
+            });
 
-        const nameElement =
-            document.querySelector("[data-user-name]");
-
-        const emailElement =
-            document.querySelector("[data-user-email]");
+        document
+            .querySelectorAll("[data-user-email]")
+            .forEach(element => {
+                element.textContent = user.email;
+            });
 
         const profileName =
             document.querySelector(".profile-card strong");
-
-        const avatar =
-            document.querySelector(".avatar");
-
-        const miniAvatar =
-            document.querySelector(".mini-avatar");
-
-
-        if (nameElement) {
-            nameElement.textContent = user.name;
-        }
-
-        if (emailElement) {
-            emailElement.textContent = user.email;
-        }
 
         if (profileName) {
             profileName.textContent = user.name;
         }
 
+        const initials = getInitials(user.name);
 
-        // Generate initials
-        const initials = user.name
-            .split(/\s+/)
-            .filter(Boolean)
-            .slice(0, 2)
-            .map(word => word.charAt(0).toUpperCase())
-            .join("");
-
-
-        if (avatar) {
-            avatar.textContent = initials;
-        }
-
-        if (miniAvatar) {
-            miniAvatar.textContent = initials;
-        }
+        document
+            .querySelectorAll(".avatar, .mini-avatar")
+            .forEach(avatar => {
+                avatar.textContent = initials;
+            });
     }
 
+    function getInitials(name) {
+        return name
+            .split(" ")
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(word =>
+                word.charAt(0).toUpperCase()
+            )
+            .join("");
+    }
 
-    // =====================================================
+    // ==========================================
     // LOGGED-IN NAVIGATION
-    // =====================================================
+    // ==========================================
 
     function updateLoggedInNavigation() {
 
@@ -561,29 +509,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const memberActions =
             document.querySelector(".member-actions");
 
-        const topActions =
-            document.querySelector(".top-actions");
-
-
-        // Hide Sign In / Create Account
         if (guestActions) {
             guestActions.style.display = "none";
         }
 
-
-        // Show member area
         if (memberActions) {
             memberActions.style.display = "flex";
         }
 
-
-        if (!topActions) return;
-
-
-        // Prevent duplicate Sign Out buttons
         let signoutButton =
             document.querySelector("#top-signout");
-
 
         if (!signoutButton) {
 
@@ -591,388 +526,235 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.createElement("button");
 
             signoutButton.id = "top-signout";
+            signoutButton.type = "button";
             signoutButton.textContent = "Sign out";
 
-            signoutButton.type = "button";
+            signoutButton.style.cursor = "pointer";
+            signoutButton.style.border = "none";
+            signoutButton.style.background = "transparent";
+            signoutButton.style.font = "inherit";
+            signoutButton.style.color = "inherit";
 
-            signoutButton.style.cssText = `
-                border: none;
-                background: transparent;
-                color: #6f7977;
-                font-size: 11px;
-                font-weight: 700;
-                cursor: pointer;
-                padding: 8px 4px;
-            `;
+            const memberActionsContainer =
+                document.querySelector(".member-actions");
 
-            topActions.appendChild(signoutButton);
-
-            signoutButton.addEventListener(
-                "click",
-                signOut
-            );
+            if (memberActionsContainer) {
+                memberActionsContainer.appendChild(
+                    signoutButton
+                );
+            }
         }
+
+        signoutButton.onclick = signOut;
     }
 
-
-    // =====================================================
+    // ==========================================
     // DASHBOARD FUNCTIONS
-    // =====================================================
+    // ==========================================
 
     function setupDashboardFunctions() {
 
-
-        // =================================================
         // SAVE JOBS
-        // =================================================
+        document
+            .querySelectorAll(".save-button")
+            .forEach(button => {
 
-        const saveButtons =
-            document.querySelectorAll(".save-button");
+                button.onclick = () => {
 
+                    button.classList.toggle("saved");
 
-        saveButtons.forEach(button => {
-
-            if (button.dataset.jsReady === "true") {
-                return;
-            }
-
-            button.dataset.jsReady = "true";
-
-
-            button.addEventListener("click", () => {
-
-                button.classList.toggle("saved");
-
-
-                if (button.classList.contains("saved")) {
-
-                    button.textContent = "♥";
-
-                    button.style.color = "#ec765e";
-
-                } else {
-
-                    button.textContent = "♡";
-
-                    button.style.color = "";
-                }
+                    if (button.classList.contains("saved")) {
+                        button.textContent = "♥";
+                    } else {
+                        button.textContent = "♡";
+                    }
+                };
             });
-        });
 
+        // APPLY JOBS
+        document
+            .querySelectorAll(".apply-button")
+            .forEach(button => {
 
-        // =================================================
-        // APPLY BUTTONS
-        // =================================================
+                button.onclick = () => {
 
-        const applyButtons =
-            document.querySelectorAll(".apply-button");
-
-
-        applyButtons.forEach(button => {
-
-            if (button.dataset.jsReady === "true") {
-                return;
-            }
-
-            button.dataset.jsReady = "true";
-
-
-            button.addEventListener("click", () => {
-
-                if (button.classList.contains("applied")) {
+                    if (button.disabled) return;
 
                     button.textContent = "Applied ✓";
-
-                    return;
-                }
-
-
-                button.classList.add("applied");
-
-                button.textContent = "Applied ✓";
-
-                button.style.background = "#6b9f83";
-
-                button.style.cursor = "default";
+                    button.disabled = true;
+                    button.style.cursor = "default";
+                    button.style.opacity = "0.8";
+                };
             });
-        });
 
-
-        // =================================================
         // PROFILE MENU
-        // =================================================
-
         const profileButton =
             document.querySelector("[data-profile-menu]");
 
         const profileMenu =
             document.querySelector(".profile-menu");
 
-
         if (profileButton && profileMenu) {
 
-            if (profileButton.dataset.jsReady !== "true") {
+            profileButton.onclick = event => {
 
-                profileButton.dataset.jsReady = "true";
+                event.stopPropagation();
 
-
-                profileButton.addEventListener(
-                    "click",
-                    (event) => {
-
-                        event.stopPropagation();
-
-                        profileMenu.classList.toggle("visible");
-                    }
+                profileMenu.classList.toggle(
+                    "visible"
                 );
-            }
-        }
+            };
 
+            document.addEventListener(
+                "click",
+                event => {
 
-        // Close profile menu when clicking elsewhere
-        if (!document.body.dataset.profileListener) {
-
-            document.body.dataset.profileListener = "true";
-
-
-            document.addEventListener("click", () => {
-
-                const menu =
-                    document.querySelector(".profile-menu");
-
-                if (menu) {
-                    menu.classList.remove("visible");
+                    if (
+                        !profileMenu.contains(event.target) &&
+                        !profileButton.contains(event.target)
+                    ) {
+                        profileMenu.classList.remove(
+                            "visible"
+                        );
+                    }
                 }
-            });
+            );
         }
 
-
-        // =================================================
-        // JOB SEARCH
-        // =================================================
-
+        // SEARCH
         const searchButton =
             document.querySelector(".search-button");
 
         const searchInput =
             document.querySelector(
-                '.search-field input[type="search"]'
+                ".search-panel input"
             );
-
 
         if (searchButton && searchInput) {
 
-            if (searchButton.dataset.jsReady !== "true") {
+            searchButton.onclick = () => {
+                searchJobs(searchInput.value);
+            };
 
-                searchButton.dataset.jsReady = "true";
+            searchInput.addEventListener(
+                "keydown",
+                event => {
 
-
-                searchButton.addEventListener(
-                    "click",
-                    searchJobs
-                );
-
-
-                searchInput.addEventListener(
-                    "keydown",
-                    (event) => {
-
-                        if (event.key === "Enter") {
-
-                            event.preventDefault();
-
-                            searchJobs();
-                        }
+                    if (event.key === "Enter") {
+                        searchJobs(searchInput.value);
                     }
-                );
-            }
-        }
-
-
-        // =================================================
-        // JOB FILTERS
-        // =================================================
-
-        const filters =
-            document.querySelectorAll(".filter");
-
-
-        filters.forEach(filter => {
-
-            if (filter.dataset.jsReady === "true") {
-                return;
-            }
-
-            filter.dataset.jsReady = "true";
-
-
-            filter.addEventListener("click", () => {
-
-                filters.forEach(item =>
-                    item.classList.remove("active")
-                );
-
-                filter.classList.add("active");
-
-                filterJobs(filter.textContent.trim());
-            });
-        });
-
-
-        // =================================================
-        // EXISTING SIGN OUT BUTTON
-        // =================================================
-
-        const existingSignout =
-            document.querySelector("[data-signout]");
-
-
-        if (existingSignout) {
-
-            if (existingSignout.dataset.jsReady !== "true") {
-
-                existingSignout.dataset.jsReady = "true";
-
-                existingSignout.addEventListener(
-                    "click",
-                    (event) => {
-
-                        event.preventDefault();
-
-                        signOut();
-                    }
-                );
-            }
-        }
-    }
-
-
-    // =====================================================
-    // SEARCH JOBS
-    // =====================================================
-
-    function searchJobs() {
-
-        const searchInput =
-            document.querySelector(
-                '.search-field input[type="search"]'
+                }
             );
+        }
 
-        const jobCards =
-            document.querySelectorAll(".job-card");
+        // FILTERS
+        document
+            .querySelectorAll(".filter")
+            .forEach(filter => {
 
+                filter.onclick = () => {
 
-        if (!searchInput) return;
+                    document
+                        .querySelectorAll(".filter")
+                        .forEach(item => {
+                            item.classList.remove("active");
+                        });
 
+                    filter.classList.add("active");
 
-        const searchTerm =
-            searchInput.value.trim().toLowerCase();
+                    const filterText =
+                        filter.textContent
+                            .trim()
+                            .toLowerCase();
 
+                    filterJobs(filterText);
+                };
+            });
 
-        jobCards.forEach(card => {
-
-            const text =
-                card.textContent.toLowerCase();
-
-
-            if (!searchTerm || text.includes(searchTerm)) {
-
-                card.style.display = "";
-
-            } else {
-
-                card.style.display = "none";
-            }
-        });
+        // EXISTING SIGNOUT BUTTON
+        document
+            .querySelectorAll("[data-signout]")
+            .forEach(button => {
+                button.onclick = signOut;
+            });
     }
 
+    // ==========================================
+    // SEARCH JOBS
+    // ==========================================
 
-    // =====================================================
+    function searchJobs(searchTerm) {
+
+        const term =
+            searchTerm.trim().toLowerCase();
+
+        document
+            .querySelectorAll(".job-card")
+            .forEach(card => {
+
+                const text =
+                    card.textContent.toLowerCase();
+
+                card.style.display =
+                    !term || text.includes(term)
+                        ? ""
+                        : "none";
+            });
+    }
+
+    // ==========================================
     // FILTER JOBS
-    // =====================================================
+    // ==========================================
 
     function filterJobs(filterName) {
 
-        const jobCards =
+        const cards =
             document.querySelectorAll(".job-card");
 
-
-        const filter =
-            filterName.toLowerCase();
-
-
-        jobCards.forEach(card => {
+        cards.forEach(card => {
 
             const text =
                 card.textContent.toLowerCase();
 
+            let show = true;
 
-            if (
-                filter.includes("all jobs") ||
-                filter.includes("filters")
-            ) {
-
-                card.style.display = "";
-
-                return;
+            if (filterName === "remote") {
+                show = text.includes("remote");
             }
 
-
-            if (filter.includes("remote")) {
-
-                card.style.display =
-                    text.includes("remote")
-                        ? ""
-                        : "none";
-
-                return;
+            else if (filterName === "on-site") {
+                show =
+                    text.includes("on-site") ||
+                    text.includes("onsite");
             }
 
-
-            if (filter.includes("on-site")) {
-
-                card.style.display =
-                    text.includes("on-site")
-                        ? ""
-                        : "none";
-
-                return;
+            else if (filterName === "full-time") {
+                show =
+                    text.includes("full-time") ||
+                    text.includes("full time");
             }
 
-
-            if (filter.includes("full-time")) {
-
-                card.style.display =
-                    text.includes("full-time")
-                        ? ""
-                        : "none";
-
-                return;
+            else if (filterName === "all jobs") {
+                show = true;
             }
 
-
-            card.style.display = "";
+            card.style.display =
+                show ? "" : "none";
         });
     }
 
-
-    // =====================================================
-    // SIGN OUT
-    // =====================================================
+    // ==========================================
+    // LOGOUT
+    // ==========================================
 
     function signOut() {
 
-        // Delete saved account
         localStorage.removeItem("careerlyUser");
 
-
-        // Hide dashboard
         if (dashboard) {
             dashboard.hidden = true;
         }
 
-
-        // Close profile menu
         const profileMenu =
             document.querySelector(".profile-menu");
 
@@ -980,8 +762,6 @@ document.addEventListener("DOMContentLoaded", () => {
             profileMenu.classList.remove("visible");
         }
 
-
-        // Remove top Sign Out button
         const signoutButton =
             document.querySelector("#top-signout");
 
@@ -989,8 +769,6 @@ document.addEventListener("DOMContentLoaded", () => {
             signoutButton.remove();
         }
 
-
-        // Reset guest buttons
         const guestActions =
             document.querySelector(".guest-actions");
 
@@ -998,382 +776,651 @@ document.addEventListener("DOMContentLoaded", () => {
             guestActions.style.display = "";
         }
 
+        const memberActions =
+            document.querySelector(".member-actions");
 
-        // Remove old signup screen
-        const signupScreen =
-            document.querySelector("#signup-screen");
-
-        if (signupScreen) {
-            signupScreen.remove();
+        if (memberActions) {
+            memberActions.style.display = "";
         }
 
-
-        // Show signup screen
-        createSignupScreen();
+        // Keep the registered account.
+        // Only remove the current login session.
+        createLoginScreen();
     }
 
+    // ==========================================
+    // REMOVE SIGNUP SCREEN
+    // ==========================================
 
-    // =====================================================
-    // EXISTING AUTH MODAL
-    // =====================================================
+    function removeSignupScreen() {
+
+        const screen =
+            document.querySelector("#signup-screen");
+
+        if (screen) {
+            screen.remove();
+        }
+
+        const style =
+            document.querySelector("#signup-screen-style");
+
+        if (style) {
+            style.remove();
+        }
+    }
+
+    // ==========================================
+    // REMOVE LOGIN SCREEN
+    // ==========================================
+
+    function removeLoginScreen() {
+
+        const screen =
+            document.querySelector("#login-screen");
+
+        if (screen) {
+            screen.remove();
+        }
+
+        const style =
+            document.querySelector("#login-screen-style");
+
+        if (style) {
+            style.remove();
+        }
+    }
+
+    // ==========================================
+    // SIGNUP STYLES
+    // ==========================================
+
+    function injectSignupStyles() {
+
+        if (
+            document.querySelector(
+                "#signup-screen-style"
+            )
+        ) {
+            return;
+        }
+
+        const style =
+            document.createElement("style");
+
+        style.id = "signup-screen-style";
+
+        style.textContent = `
+
+            #signup-screen {
+                position: fixed;
+                inset: 0;
+                z-index: 99999;
+                background: #ffffff;
+                font-family: Trebuchet MS, Segoe UI, sans-serif;
+                color: #27323b;
+            }
+
+            .signup-container {
+                width: 100%;
+                height: 100%;
+                display: flex;
+            }
+
+            .signup-left {
+                width: 50%;
+                padding: 40px 8%;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+                overflow-y: auto;
+            }
+
+            .signup-brand {
+                color: #287b5c;
+                font-size: 25px;
+                font-weight: bold;
+            }
+
+            .signup-content {
+                width: 100%;
+                max-width: 480px;
+                margin: auto;
+            }
+
+            .signup-label {
+                color: #287b5c;
+                font-size: 12px;
+                font-weight: bold;
+                letter-spacing: 2px;
+            }
+
+            .signup-content h1 {
+                font-size: clamp(38px, 4vw, 58px);
+                line-height: 1.05;
+                margin: 15px 0;
+            }
+
+            .signup-content > p {
+                color: #7b8588;
+                line-height: 1.6;
+                margin-bottom: 30px;
+            }
+
+            #signup-screen-form {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #signup-screen-form label {
+                font-size: 14px;
+                font-weight: bold;
+                margin-top: 8px;
+            }
+
+            #signup-screen-form input {
+                padding: 14px 16px;
+                border: 1px solid #e6e9e5;
+                border-radius: 8px;
+                outline: none;
+                font-size: 15px;
+                box-sizing: border-box;
+            }
+
+            #signup-screen-form input:focus {
+                border-color: #287b5c;
+            }
+
+            .signup-error {
+                color: #d9534f !important;
+                font-size: 13px;
+                margin: 8px 0 !important;
+            }
+
+            .signup-submit {
+                margin-top: 10px;
+                padding: 15px;
+                border: none;
+                border-radius: 8px;
+                background: #287b5c;
+                color: white;
+                font-size: 15px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .signup-submit:hover {
+                opacity: 0.9;
+            }
+
+            .signup-login-text {
+                text-align: center;
+                font-size: 14px;
+                margin-top: 22px !important;
+            }
+
+            .signup-login-text button {
+                border: none;
+                background: none;
+                color: #287b5c;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .signup-right {
+                width: 50%;
+                background: #eef6f1;
+                overflow: hidden;
+            }
+
+            .signup-art {
+                width: 100%;
+                height: 100%;
+                position: relative;
+            }
+
+            .art-circle {
+                position: absolute;
+                border-radius: 50%;
+                background: #d5e9dc;
+            }
+
+            .art-circle-one {
+                width: 420px;
+                height: 420px;
+                top: 10%;
+                right: 5%;
+            }
+
+            .art-circle-two {
+                width: 240px;
+                height: 240px;
+                bottom: 5%;
+                left: 5%;
+                background: #f4d6cd;
+            }
+
+            .art-card {
+                position: absolute;
+                background: white;
+                padding: 18px 22px;
+                border-radius: 12px;
+                box-shadow: 0 15px 40px rgba(0,0,0,.08);
+                font-weight: bold;
+                z-index: 3;
+            }
+
+            .art-card span {
+                color: #287b5c;
+                margin-right: 8px;
+            }
+
+            .art-card-one {
+                top: 30%;
+                left: 15%;
+            }
+
+            .art-card-two {
+                bottom: 27%;
+                right: 12%;
+            }
+
+            .art-person {
+                position: absolute;
+                width: 220px;
+                height: 330px;
+                background: #ec765e;
+                border-radius: 110px 110px 20px 20px;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            @media (max-width: 750px) {
+
+                .signup-left {
+                    width: 100%;
+                    padding: 30px;
+                }
+
+                .signup-right {
+                    display: none;
+                }
+            }
+        `;
+
+        document.head.appendChild(style);
+    }
+
+    // ==========================================
+    // LOGIN STYLES
+    // ==========================================
+
+    function injectLoginStyles() {
+
+        if (
+            document.querySelector(
+                "#login-screen-style"
+            )
+        ) {
+            return;
+        }
+
+        const style =
+            document.createElement("style");
+
+        style.id = "login-screen-style";
+
+        style.textContent = `
+
+            #login-screen {
+                position: fixed;
+                inset: 0;
+                z-index: 99999;
+                background: #ffffff;
+                font-family: Trebuchet MS, Segoe UI, sans-serif;
+                color: #27323b;
+            }
+
+            .login-container {
+                width: 100%;
+                height: 100%;
+                display: flex;
+            }
+
+            .login-left {
+                width: 50%;
+                padding: 40px 8%;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+                overflow-y: auto;
+            }
+
+            .login-brand {
+                color: #287b5c;
+                font-size: 25px;
+                font-weight: bold;
+            }
+
+            .login-content {
+                width: 100%;
+                max-width: 480px;
+                margin: auto;
+            }
+
+            .login-label {
+                color: #287b5c;
+                font-size: 12px;
+                font-weight: bold;
+                letter-spacing: 2px;
+            }
+
+            .login-content h1 {
+                font-size: clamp(42px, 4vw, 62px);
+                line-height: 1.05;
+                margin: 15px 0;
+            }
+
+            .login-content > p {
+                color: #7b8588;
+                line-height: 1.6;
+                margin-bottom: 30px;
+            }
+
+            #login-screen-form {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #login-screen-form label {
+                font-size: 14px;
+                font-weight: bold;
+                margin-top: 8px;
+            }
+
+            #login-screen-form input {
+                padding: 14px 16px;
+                border: 1px solid #e6e9e5;
+                border-radius: 8px;
+                outline: none;
+                font-size: 15px;
+                box-sizing: border-box;
+            }
+
+            #login-screen-form input:focus {
+                border-color: #287b5c;
+            }
+
+            .login-error {
+                color: #d9534f !important;
+                font-size: 13px;
+                margin: 8px 0 !important;
+            }
+
+            .login-submit {
+                margin-top: 10px;
+                padding: 15px;
+                border: none;
+                border-radius: 8px;
+                background: #287b5c;
+                color: white;
+                font-size: 15px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .login-submit:hover {
+                opacity: 0.9;
+            }
+
+            .login-signup-text {
+                text-align: center;
+                font-size: 14px;
+                margin-top: 22px !important;
+            }
+
+            .login-signup-text button {
+                border: none;
+                background: none;
+                color: #287b5c;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .login-right {
+                width: 50%;
+                background: #f8f1ee;
+                overflow: hidden;
+            }
+
+            .login-art {
+                width: 100%;
+                height: 100%;
+                position: relative;
+            }
+
+            .login-circle {
+                position: absolute;
+                border-radius: 50%;
+            }
+
+            .login-circle-one {
+                width: 450px;
+                height: 450px;
+                top: 8%;
+                right: 8%;
+                background: #f3d8d0;
+            }
+
+            .login-circle-two {
+                width: 250px;
+                height: 250px;
+                bottom: 5%;
+                left: 4%;
+                background: #d5e9dc;
+            }
+
+            .login-card {
+                position: absolute;
+                background: white;
+                padding: 18px 22px;
+                border-radius: 12px;
+                box-shadow: 0 15px 40px rgba(0,0,0,.08);
+                font-weight: bold;
+                z-index: 3;
+            }
+
+            .login-card span {
+                color: #ec765e;
+                margin-right: 8px;
+            }
+
+            .login-card-one {
+                top: 30%;
+                left: 12%;
+            }
+
+            .login-card-two {
+                bottom: 27%;
+                right: 10%;
+            }
+
+            .login-person {
+                position: absolute;
+                width: 220px;
+                height: 330px;
+                background: #287b5c;
+                border-radius: 110px 110px 20px 20px;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            @media (max-width: 750px) {
+
+                .login-left {
+                    width: 100%;
+                    padding: 30px;
+                }
+
+                .login-right {
+                    display: none;
+                }
+            }
+        `;
+
+        document.head.appendChild(style);
+    }
+
+    // ==========================================
+    // EXISTING HTML AUTH MODAL
+    // ==========================================
+    // The old modal is kept available for the original
+    // HTML buttons, but its forms are NOT connected to
+    // the new full-screen signup/login system.
 
     function setupExistingAuth() {
 
-        if (!authBackdrop) return;
+        const openAuthButtons =
+            document.querySelectorAll(
+                "[data-open-auth]"
+            );
 
-
-        const openButtons =
-            document.querySelectorAll("[data-open-auth]");
-
-        const closeButton =
-            document.querySelector("[data-close-auth]");
-
-        const tabs =
-            document.querySelectorAll("[data-auth-tab]");
-
-        const forms =
-            document.querySelectorAll("[data-auth-form]");
-
-
-        // -----------------------------------------------
-        // Open modal
-        // -----------------------------------------------
-
-        openButtons.forEach(button => {
-
-            if (button.dataset.jsReady === "true") {
-                return;
-            }
-
-            button.dataset.jsReady = "true";
-
+        openAuthButtons.forEach(button => {
 
             button.addEventListener("click", () => {
 
                 const mode =
-                    button.dataset.openAuth;
+                    button.getAttribute(
+                        "data-open-auth"
+                    );
 
-
-                authBackdrop.hidden = false;
+                if (authBackdrop) {
+                    authBackdrop.hidden = false;
+                }
 
                 switchAuthTab(mode);
             });
         });
 
-
-        // -----------------------------------------------
-        // Close modal
-        // -----------------------------------------------
+        const closeButton =
+            document.querySelector(
+                "[data-close-auth]"
+            );
 
         if (closeButton) {
 
             closeButton.addEventListener(
                 "click",
                 () => {
-
                     authBackdrop.hidden = true;
                 }
             );
         }
 
+        if (authBackdrop) {
 
-        // -----------------------------------------------
-        // Click outside modal
-        // -----------------------------------------------
+            authBackdrop.addEventListener(
+                "click",
+                event => {
 
-        authBackdrop.addEventListener(
-            "click",
-            (event) => {
-
-                if (event.target === authBackdrop) {
-
-                    authBackdrop.hidden = true;
-                }
-            }
-        );
-
-
-        // -----------------------------------------------
-        // Switch tabs
-        // -----------------------------------------------
-
-        tabs.forEach(tab => {
-
-            tab.addEventListener("click", () => {
-
-                switchAuthTab(
-                    tab.dataset.authTab
-                );
-            });
-        });
-
-
-        // -----------------------------------------------
-        // Existing forms
-        // -----------------------------------------------
-
-        forms.forEach(form => {
-
-            if (form.dataset.jsReady === "true") {
-                return;
-            }
-
-            form.dataset.jsReady = "true";
-
-
-            form.addEventListener(
-                "submit",
-                (event) => {
-
-                    event.preventDefault();
-
-                    const mode =
-                        form.dataset.authForm;
-
-
-                    if (mode === "signin") {
-
-                        handleModalSignIn(form);
-
-                    } else {
-
-                        handleModalSignup(form);
+                    if (
+                        event.target === authBackdrop
+                    ) {
+                        authBackdrop.hidden = true;
                     }
                 }
             );
-        });
+        }
+
+        document
+            .querySelectorAll("[data-auth-tab]")
+            .forEach(tab => {
+
+                tab.addEventListener("click", () => {
+
+                    const mode =
+                        tab.getAttribute(
+                            "data-auth-tab"
+                        );
+
+                    switchAuthTab(mode);
+                });
+            });
+
+        // IMPORTANT:
+        // Do NOT attach the old modal's forms
+        // to handleSignup or handleLogin.
     }
 
-
-    // =====================================================
-    // SWITCH AUTH TAB
-    // =====================================================
+    // ==========================================
+    // AUTH TAB SWITCHING
+    // ==========================================
 
     function switchAuthTab(mode) {
 
-        const tabs =
-            document.querySelectorAll("[data-auth-tab]");
+        document
+            .querySelectorAll("[data-auth-tab]")
+            .forEach(tab => {
 
-        const forms =
-            document.querySelectorAll("[data-auth-form]");
+                tab.classList.toggle(
+                    "active",
+                    tab.getAttribute(
+                        "data-auth-tab"
+                    ) === mode
+                );
+            });
+
+        const signInForm =
+            document.querySelector(
+                "[data-signin-form]"
+            );
+
+        const signUpForm =
+            document.querySelector(
+                "[data-signup-form]"
+            );
+
+        if (signInForm) {
+            signInForm.hidden =
+                mode !== "signin";
+        }
+
+        if (signUpForm) {
+            signUpForm.hidden =
+                mode !== "signup";
+        }
 
         const title =
-            document.querySelector("#auth-title");
-
-
-        tabs.forEach(tab => {
-
-            tab.classList.toggle(
-                "active",
-                tab.dataset.authTab === mode
+            document.querySelector(
+                "[data-auth-title]"
             );
-        });
-
-
-        forms.forEach(form => {
-
-            form.hidden =
-                form.dataset.authForm !== mode;
-        });
-
 
         if (title) {
 
             title.textContent =
-                mode === "signup"
-                    ? "Create your account."
-                    : "Find work that fits you.";
+                mode === "signin"
+                    ? "Welcome back"
+                    : "Create your account";
         }
     }
 
-
-    // =====================================================
-    // MODAL SIGN IN
-    // =====================================================
-
-    function handleModalSignIn(form) {
-
-        const email =
-            form.querySelector(
-                'input[type="email"]'
-            ).value.trim();
-
-        const password =
-            form.querySelector(
-                'input[type="password"]'
-            ).value;
-
-
-        if (!email || password.length < 6) {
-            showAuthStatus(
-                "Please enter a valid email and password."
-            );
-            return;
-        }
-
-
-        const existingUser =
-            JSON.parse(
-                localStorage.getItem("careerlyUser") || "null"
-            );
-
-
-        const user = existingUser || {
-            name: email.split("@")[0],
-            email: email
-        };
-
-
-        localStorage.setItem(
-            "careerlyUser",
-            JSON.stringify(user)
-        );
-
-
-        authBackdrop.hidden = true;
-
-        showDashboard(user);
-    }
-
-
-    // =====================================================
-    // MODAL SIGNUP
-    // =====================================================
-
-    function handleModalSignup(form) {
-
-        const name =
-            form.querySelector(
-                'input[type="text"]'
-            ).value.trim();
-
-        const email =
-            form.querySelector(
-                'input[type="email"]'
-            ).value.trim();
-
-        const password =
-            form.querySelector(
-                'input[type="password"]'
-            ).value;
-
-
-        if (name.length < 2) {
-
-            showAuthStatus(
-                "Please enter your full name."
-            );
-
-            return;
-        }
-
-
-        if (!email ||
-            !form.querySelector('input[type="email"]').checkValidity()) {
-
-            showAuthStatus(
-                "Please enter a valid email address."
-            );
-
-            return;
-        }
-
-
-        if (password.length < 6) {
-
-            showAuthStatus(
-                "Password must be at least 6 characters."
-            );
-
-            return;
-        }
-
-
-        const user = {
-            name: name,
-            email: email
-        };
-
-
-        localStorage.setItem(
-            "careerlyUser",
-            JSON.stringify(user)
-        );
-
-
-        authBackdrop.hidden = true;
-
-        showDashboard(user);
-    }
-
-
-    // =====================================================
-    // AUTH STATUS MESSAGE
-    // =====================================================
-
-    function showAuthStatus(message) {
-
-        const status =
-            document.querySelector(".auth-status");
-
-        if (!status) return;
-
-        status.textContent = message;
-    }
-
-
-    // =====================================================
+    // ==========================================
     // START APPLICATION
-    // =====================================================
+    // ==========================================
 
     setupExistingAuth();
 
+    const loggedInUser = getUser();
 
-    if (!savedUser) {
+    if (loggedInUser) {
 
-        // -----------------------------------------------
-        // NEW USER
-        // -----------------------------------------------
-
-        createSignupScreen();
+        showDashboard(loggedInUser);
 
     } else {
 
-        // -----------------------------------------------
-        // RETURNING USER
-        // -----------------------------------------------
-
-        try {
-
-            const user =
-                JSON.parse(savedUser);
-
-
-            if (
-                user &&
-                user.name &&
-                user.email
-            ) {
-
-                showDashboard(user);
-
-            } else {
-
-                localStorage.removeItem(
-                    "careerlyUser"
-                );
-
-                createSignupScreen();
-            }
-
-        } catch {
-
-            localStorage.removeItem(
-                "careerlyUser"
-            );
-
-            createSignupScreen();
-        }
+        createSignupScreen();
     }
-
 });
