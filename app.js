@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
     const landingPage = document.querySelector(".landing-page");
     const dashboard = document.querySelector("#dashboard");
     const authBackdrop = document.querySelector("[data-auth-backdrop]");
@@ -8,9 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dashboard) dashboard.hidden = true;
     if (authBackdrop) authBackdrop.hidden = true;
 
-    // ==========================================
-    // USER STORAGE
-    // ==========================================
+
+    // =========================================================
+    // STORAGE
+    // =========================================================
 
     function getUser() {
         const user = localStorage.getItem("careerlyUser");
@@ -32,13 +34,63 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ==========================================
+    function getProfile() {
+        const profile = localStorage.getItem("careerlyProfile");
+
+        try {
+            return profile ? JSON.parse(profile) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function saveProfile(profile) {
+        localStorage.setItem(
+            "careerlyProfile",
+            JSON.stringify(profile)
+        );
+    }
+
+    function getSettings() {
+        const settings = localStorage.getItem("careerlySettings");
+
+        try {
+            return settings
+                ? JSON.parse(settings)
+                : {
+                    emailNotifications: true,
+                    jobAlerts: true,
+                    applicationUpdates: true,
+                    profileVisibility: true
+                };
+        } catch {
+            return {
+                emailNotifications: true,
+                jobAlerts: true,
+                applicationUpdates: true,
+                profileVisibility: true
+            };
+        }
+    }
+
+    function saveSettings(settings) {
+        localStorage.setItem(
+            "careerlySettings",
+            JSON.stringify(settings)
+        );
+    }
+
+
+    // =========================================================
     // SIGNUP SCREEN
-    // ==========================================
+    // =========================================================
 
     function createSignupScreen() {
+
         removeSignupScreen();
         removeLoginScreen();
+        removeProfileScreen();
+        removeSettingsScreen();
 
         const signupScreen = document.createElement("div");
         signupScreen.id = "signup-screen";
@@ -47,12 +99,21 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="signup-container">
 
                 <div class="signup-left">
-                    <div class="signup-brand">Careerly</div>
+
+                    <div class="signup-brand">
+                        Careerly
+                    </div>
 
                     <div class="signup-content">
-                        <span class="signup-label">GET STARTED</span>
 
-                        <h1>Create your<br>Careerly account.</h1>
+                        <span class="signup-label">
+                            GET STARTED
+                        </span>
+
+                        <h1>
+                            Create your<br>
+                            Careerly account.
+                        </h1>
 
                         <p>
                             Find opportunities that fit your skills,
@@ -61,7 +122,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         <form id="signup-screen-form">
 
-                            <label for="signup-name">Full name</label>
+                            <label for="signup-name">
+                                Full name
+                            </label>
+
                             <input
                                 type="text"
                                 id="signup-name"
@@ -71,7 +135,10 @@ document.addEventListener("DOMContentLoaded", () => {
                                 required
                             >
 
-                            <label for="signup-email">Email address</label>
+                            <label for="signup-email">
+                                Email address
+                            </label>
+
                             <input
                                 type="email"
                                 id="signup-email"
@@ -81,7 +148,10 @@ document.addEventListener("DOMContentLoaded", () => {
                                 required
                             >
 
-                            <label for="signup-password">Password</label>
+                            <label for="signup-password">
+                                Password
+                            </label>
+
                             <input
                                 type="password"
                                 id="signup-password"
@@ -94,7 +164,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             <p id="signup-error" class="signup-error"></p>
 
-                            <button type="submit" class="signup-submit">
+                            <button
+                                type="submit"
+                                class="signup-submit"
+                            >
                                 Create account
                             </button>
 
@@ -102,14 +175,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         <p class="signup-login-text">
                             Already have an account?
-                            <button type="button" id="go-to-login">
+
+                            <button
+                                type="button"
+                                id="go-to-login"
+                            >
                                 Log in
                             </button>
                         </p>
+
                     </div>
                 </div>
 
                 <div class="signup-right">
+
                     <div class="signup-art">
 
                         <div class="art-circle art-circle-one"></div>
@@ -128,6 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="art-person"></div>
 
                     </div>
+
                 </div>
 
             </div>
@@ -137,7 +217,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         injectSignupStyles();
 
-        const form = document.querySelector("#signup-screen-form");
+        const form =
+            document.querySelector("#signup-screen-form");
 
         if (form) {
             form.addEventListener("submit", handleSignup);
@@ -154,13 +235,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ==========================================
+
+    // =========================================================
     // LOGIN SCREEN
-    // ==========================================
+    // =========================================================
 
     function createLoginScreen() {
+
         removeSignupScreen();
         removeLoginScreen();
+        removeProfileScreen();
+        removeSettingsScreen();
 
         const loginScreen = document.createElement("div");
         loginScreen.id = "login-screen";
@@ -170,7 +255,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <div class="login-left">
 
-                    <div class="login-brand">Careerly</div>
+                    <div class="login-brand">
+                        Careerly
+                    </div>
 
                     <div class="login-content">
 
@@ -178,7 +265,10 @@ document.addEventListener("DOMContentLoaded", () => {
                             WELCOME BACK
                         </span>
 
-                        <h1>Welcome<br>back.</h1>
+                        <h1>
+                            Welcome<br>
+                            back.
+                        </h1>
 
                         <p>
                             Log in to continue your journey
@@ -226,6 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         <p class="login-signup-text">
                             Don't have an account?
+
                             <button
                                 type="button"
                                 id="go-to-signup"
@@ -285,11 +376,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ==========================================
-    // HANDLE SIGNUP
-    // ==========================================
+
+    // =========================================================
+    // SIGNUP
+    // =========================================================
 
     function handleSignup(event) {
+
         event.preventDefault();
 
         const form = event.currentTarget;
@@ -310,12 +403,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const email = emailInput.value.trim().toLowerCase();
         const password = passwordInput.value;
 
-        // Clear previous error
         error.textContent = "";
 
         if (name.length < 2) {
             error.textContent =
                 "Please enter your full name.";
+
             nameInput.focus();
             return;
         }
@@ -323,6 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!emailInput.checkValidity()) {
             error.textContent =
                 "Please enter a valid email address.";
+
             emailInput.focus();
             return;
         }
@@ -330,11 +424,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (password.length < 6) {
             error.textContent =
                 "Password must be at least 6 characters.";
+
             passwordInput.focus();
             return;
         }
 
-        // Save the registered account
         const account = {
             name: name,
             email: email,
@@ -346,33 +440,53 @@ document.addEventListener("DOMContentLoaded", () => {
             JSON.stringify(account)
         );
 
-        // Do NOT log in automatically.
-        // Send the user to the login page.
+        // Create default profile
+        const defaultProfile = {
+            name: name,
+            email: email,
+            jobTitle: "Product Designer",
+            location: "New York, NY",
+            about:
+                "I'm a creative professional looking for meaningful opportunities where I can grow, contribute, and do work that makes an impact.",
+            skills: [
+                "UI/UX Design",
+                "Figma",
+                "Prototyping",
+                "User Research"
+            ]
+        };
+
+        saveProfile(defaultProfile);
+
         createLoginScreen();
 
-        // Pre-fill the registered email
         const loginEmail =
             document.querySelector("#login-email");
 
         if (loginEmail) {
+
             loginEmail.value = email;
 
             setTimeout(() => {
+
                 const loginPassword =
                     document.querySelector("#login-password");
 
                 if (loginPassword) {
                     loginPassword.focus();
                 }
+
             }, 50);
         }
     }
 
-    // ==========================================
-    // HANDLE LOGIN
-    // ==========================================
+
+    // =========================================================
+    // LOGIN
+    // =========================================================
 
     function handleLogin(event) {
+
         event.preventDefault();
 
         const form = event.currentTarget;
@@ -397,8 +511,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const account = getRegisteredAccount();
 
         if (!account) {
+
             error.textContent =
                 "No account found. Please create an account first.";
+
             return;
         }
 
@@ -406,13 +522,15 @@ document.addEventListener("DOMContentLoaded", () => {
             email !== account.email ||
             password !== account.password
         ) {
+
             error.textContent =
                 "Incorrect email or password.";
+
             passwordInput.focus();
+
             return;
         }
 
-        // Successful login
         const user = {
             name: account.name,
             email: account.email
@@ -423,16 +541,39 @@ document.addEventListener("DOMContentLoaded", () => {
             JSON.stringify(user)
         );
 
+        // Make sure profile exists
+        if (!getProfile()) {
+
+            saveProfile({
+                name: account.name,
+                email: account.email,
+                jobTitle: "Product Designer",
+                location: "New York, NY",
+                about:
+                    "I'm a creative professional looking for meaningful opportunities where I can grow, contribute, and do work that makes an impact.",
+                skills: [
+                    "UI/UX Design",
+                    "Figma",
+                    "Prototyping",
+                    "User Research"
+                ]
+            });
+        }
+
         showDashboard(user);
     }
 
-    // ==========================================
+
+    // =========================================================
     // SHOW DASHBOARD
-    // ==========================================
+    // =========================================================
 
     function showDashboard(user) {
+
         removeSignupScreen();
         removeLoginScreen();
+        removeProfileScreen();
+        removeSettingsScreen();
 
         if (landingPage) {
             landingPage.hidden = true;
@@ -451,33 +592,52 @@ document.addEventListener("DOMContentLoaded", () => {
         setupDashboardFunctions();
     }
 
-    // ==========================================
-    // UPDATE USER INFORMATION
-    // ==========================================
+
+    // =========================================================
+    // UPDATE USER
+    // =========================================================
 
     function updateUser(user) {
+
         if (!user) return;
+
+        const profile = getProfile();
+
+        const displayName =
+            profile?.name || user.name;
+
+        const displayEmail =
+            profile?.email || user.email;
 
         document
             .querySelectorAll("[data-user-name]")
             .forEach(element => {
-                element.textContent = user.name;
+                element.textContent = displayName;
             });
 
         document
             .querySelectorAll("[data-user-email]")
             .forEach(element => {
-                element.textContent = user.email;
+                element.textContent = displayEmail;
             });
 
         const profileName =
             document.querySelector(".profile-card strong");
 
         if (profileName) {
-            profileName.textContent = user.name;
+            profileName.textContent = displayName;
         }
 
-        const initials = getInitials(user.name);
+        const profileJob =
+            document.querySelector(".profile-card span");
+
+        if (profileJob) {
+            profileJob.textContent =
+                profile?.jobTitle || "Product Designer";
+        }
+
+        const initials =
+            getInitials(displayName);
 
         document
             .querySelectorAll(".avatar, .mini-avatar")
@@ -486,7 +646,9 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
+
     function getInitials(name) {
+
         return name
             .split(" ")
             .filter(Boolean)
@@ -497,9 +659,10 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("");
     }
 
-    // ==========================================
+
+    // =========================================================
     // LOGGED-IN NAVIGATION
-    // ==========================================
+    // =========================================================
 
     function updateLoggedInNavigation() {
 
@@ -539,6 +702,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.querySelector(".member-actions");
 
             if (memberActionsContainer) {
+
                 memberActionsContainer.appendChild(
                     signoutButton
                 );
@@ -548,13 +712,17 @@ document.addEventListener("DOMContentLoaded", () => {
         signoutButton.onclick = signOut;
     }
 
-    // ==========================================
+
+    // =========================================================
     // DASHBOARD FUNCTIONS
-    // ==========================================
+    // =========================================================
 
     function setupDashboardFunctions() {
 
+        // -----------------------------------------------------
         // SAVE JOBS
+        // -----------------------------------------------------
+
         document
             .querySelectorAll(".save-button")
             .forEach(button => {
@@ -571,7 +739,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 };
             });
 
+
+        // -----------------------------------------------------
         // APPLY JOBS
+        // -----------------------------------------------------
+
         document
             .querySelectorAll(".apply-button")
             .forEach(button => {
@@ -580,19 +752,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     if (button.disabled) return;
 
-                    button.textContent = "Applied ✓";
+                    button.textContent =
+                        "Applied ✓";
+
                     button.disabled = true;
-                    button.style.cursor = "default";
-                    button.style.opacity = "0.8";
+
+                    button.style.cursor =
+                        "default";
+
+                    button.style.opacity =
+                        "0.8";
                 };
             });
 
-        // PROFILE MENU
+
+        // -----------------------------------------------------
+        // PROFILE DROPDOWN
+        // -----------------------------------------------------
+
         const profileButton =
-            document.querySelector("[data-profile-menu]");
+            document.querySelector(
+                "[data-profile-menu]"
+            );
 
         const profileMenu =
-            document.querySelector(".profile-menu");
+            document.querySelector(
+                ".profile-menu"
+            );
 
         if (profileButton && profileMenu) {
 
@@ -604,26 +790,56 @@ document.addEventListener("DOMContentLoaded", () => {
                     "visible"
                 );
             };
+        }
 
-            document.addEventListener(
-                "click",
+
+        // -----------------------------------------------------
+        // CLOSE PROFILE MENU WHEN CLICKING OUTSIDE
+        // -----------------------------------------------------
+
+        if (!window.careerlyProfileOutsideClick) {
+
+            window.careerlyProfileOutsideClick =
                 event => {
 
+                    const button =
+                        document.querySelector(
+                            "[data-profile-menu]"
+                        );
+
+                    const menu =
+                        document.querySelector(
+                            ".profile-menu"
+                        );
+
+                    if (!button || !menu) return;
+
                     if (
-                        !profileMenu.contains(event.target) &&
-                        !profileButton.contains(event.target)
+                        !menu.contains(event.target) &&
+                        !button.contains(event.target)
                     ) {
-                        profileMenu.classList.remove(
+
+                        menu.classList.remove(
                             "visible"
                         );
                     }
-                }
+                };
+
+            document.addEventListener(
+                "click",
+                window.careerlyProfileOutsideClick
             );
         }
 
+
+        // -----------------------------------------------------
         // SEARCH
+        // -----------------------------------------------------
+
         const searchButton =
-            document.querySelector(".search-button");
+            document.querySelector(
+                ".search-button"
+            );
 
         const searchInput =
             document.querySelector(
@@ -636,18 +852,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 searchJobs(searchInput.value);
             };
 
-            searchInput.addEventListener(
-                "keydown",
-                event => {
+            searchInput.onkeydown = event => {
 
-                    if (event.key === "Enter") {
-                        searchJobs(searchInput.value);
-                    }
+                if (event.key === "Enter") {
+                    searchJobs(searchInput.value);
                 }
-            );
+            };
         }
 
+
+        // -----------------------------------------------------
         // FILTERS
+        // -----------------------------------------------------
+
         document
             .querySelectorAll(".filter")
             .forEach(filter => {
@@ -657,7 +874,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     document
                         .querySelectorAll(".filter")
                         .forEach(item => {
-                            item.classList.remove("active");
+                            item.classList.remove(
+                                "active"
+                            );
                         });
 
                     filter.classList.add("active");
@@ -671,22 +890,991 @@ document.addEventListener("DOMContentLoaded", () => {
                 };
             });
 
-        // EXISTING SIGNOUT BUTTON
+
+        // -----------------------------------------------------
+        // EXISTING SIGNOUT
+        // -----------------------------------------------------
+
         document
             .querySelectorAll("[data-signout]")
             .forEach(button => {
+
                 button.onclick = signOut;
+            });
+
+
+        // -----------------------------------------------------
+        // MY PROFILE
+        // -----------------------------------------------------
+
+        setupProfileNavigation();
+
+
+        // -----------------------------------------------------
+        // SETTINGS
+        // -----------------------------------------------------
+
+        setupSettingsNavigation();
+
+
+        // -----------------------------------------------------
+        // COMPLETE PROFILE LINKS
+        // -----------------------------------------------------
+
+        document
+            .querySelectorAll(
+                'a[href="#profile"]'
+            )
+            .forEach(link => {
+
+                link.onclick = event => {
+
+                    event.preventDefault();
+
+                    openProfileScreen();
+                };
+            });
+
+    }
+
+
+    // =========================================================
+    // MY PROFILE NAVIGATION
+    // =========================================================
+
+    function setupProfileNavigation() {
+
+        document
+            .querySelectorAll(
+                '.nav-link[href="#profile"]'
+            )
+            .forEach(link => {
+
+                link.onclick = event => {
+
+                    event.preventDefault();
+
+                    openProfileScreen();
+                };
             });
     }
 
-    // ==========================================
-    // SEARCH JOBS
-    // ==========================================
+
+    // =========================================================
+    // SETTINGS NAVIGATION
+    // =========================================================
+
+    function setupSettingsNavigation() {
+
+        document
+            .querySelectorAll(
+                '.nav-link[href="#settings"]'
+            )
+            .forEach(link => {
+
+                link.onclick = event => {
+
+                    event.preventDefault();
+
+                    openSettingsScreen();
+                };
+            });
+    }
+
+
+    // =========================================================
+    // PROFILE SCREEN
+    // =========================================================
+
+    function openProfileScreen() {
+
+        if (!dashboard) return;
+
+        const user =
+            getUser();
+
+        if (!user) return;
+
+        const profile =
+            getProfile() || {
+                name: user.name,
+                email: user.email,
+                jobTitle: "Product Designer",
+                location: "New York, NY",
+                about:
+                    "Tell employers a little about yourself.",
+                skills: [
+                    "UI/UX Design",
+                    "Figma",
+                    "Prototyping"
+                ]
+            };
+
+        saveProfile(profile);
+
+        dashboard.hidden = true;
+
+        removeSettingsScreen();
+        removeProfileScreen();
+
+        const screen =
+            document.createElement("div");
+
+        screen.id = "profile-screen";
+
+        screen.innerHTML = `
+
+            <div class="careerly-page">
+
+                <header class="careerly-page-header">
+
+                    <div>
+                        <span class="careerly-page-label">
+                            YOUR ACCOUNT
+                        </span>
+
+                        <h1>
+                            My Profile
+                        </h1>
+
+                        <p>
+                            Manage your professional information
+                            and make your profile stand out.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="careerly-back-button"
+                        id="profile-back-button"
+                    >
+                        ← Back to dashboard
+                    </button>
+
+                </header>
+
+
+                <div class="careerly-profile-layout">
+
+                    <section class="careerly-profile-card">
+
+                        <div class="careerly-profile-avatar">
+                            ${getInitials(profile.name)}
+                        </div>
+
+                        <h2 id="profile-preview-name">
+                            ${escapeHTML(profile.name)}
+                        </h2>
+
+                        <p id="profile-preview-title">
+                            ${escapeHTML(profile.jobTitle)}
+                        </p>
+
+                        <span id="profile-preview-location">
+                            ${escapeHTML(profile.location)}
+                        </span>
+
+                        <div class="careerly-profile-divider"></div>
+
+                        <div class="careerly-profile-stat">
+                            <strong>82%</strong>
+                            <span>Profile strength</span>
+                        </div>
+
+                    </section>
+
+
+                    <section class="careerly-form-card">
+
+                        <div class="careerly-card-heading">
+
+                            <div>
+                                <span>
+                                    PROFILE INFORMATION
+                                </span>
+
+                                <h2>
+                                    Personal details
+                                </h2>
+                            </div>
+
+                            <span class="careerly-status">
+                                ● Active
+                            </span>
+
+                        </div>
+
+
+                        <form id="careerly-profile-form">
+
+                            <div class="careerly-form-grid">
+
+                                <div class="careerly-field">
+
+                                    <label for="profile-name">
+                                        Full name
+                                    </label>
+
+                                    <input
+                                        id="profile-name"
+                                        type="text"
+                                        value="${escapeAttribute(profile.name)}"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="careerly-field">
+
+                                    <label for="profile-email">
+                                        Email address
+                                    </label>
+
+                                    <input
+                                        id="profile-email"
+                                        type="email"
+                                        value="${escapeAttribute(profile.email)}"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="careerly-field">
+
+                                    <label for="profile-job-title">
+                                        Job title
+                                    </label>
+
+                                    <input
+                                        id="profile-job-title"
+                                        type="text"
+                                        value="${escapeAttribute(profile.jobTitle)}"
+                                        placeholder="e.g. Product Designer"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="careerly-field">
+
+                                    <label for="profile-location">
+                                        Location
+                                    </label>
+
+                                    <input
+                                        id="profile-location"
+                                        type="text"
+                                        value="${escapeAttribute(profile.location)}"
+                                        placeholder="e.g. New York, NY"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="careerly-field">
+
+                                <label for="profile-about">
+                                    About me
+                                </label>
+
+                                <textarea
+                                    id="profile-about"
+                                    rows="5"
+                                    placeholder="Tell employers about yourself..."
+                                >${escapeHTML(profile.about)}</textarea>
+
+                            </div>
+
+
+                            <div class="careerly-field">
+
+                                <label>
+                                    Skills
+                                </label>
+
+                                <input
+                                    id="profile-skills"
+                                    type="text"
+                                    value="${escapeAttribute(profile.skills.join(", "))}"
+                                    placeholder="UI/UX Design, Figma, HTML..."
+                                >
+
+                                <small>
+                                    Separate each skill with a comma.
+                                </small>
+
+                            </div>
+
+
+                            <div
+                                id="profile-save-message"
+                                class="careerly-save-message"
+                            ></div>
+
+
+                            <div class="careerly-form-actions">
+
+                                <button
+                                    type="button"
+                                    class="careerly-cancel-button"
+                                    id="profile-cancel-button"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    class="careerly-save-button"
+                                >
+                                    Save changes
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </section>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(screen);
+
+        injectProfileStyles();
+
+        const backButton =
+            document.querySelector(
+                "#profile-back-button"
+            );
+
+        if (backButton) {
+
+            backButton.onclick =
+                returnToDashboard;
+        }
+
+
+        const cancelButton =
+            document.querySelector(
+                "#profile-cancel-button"
+            );
+
+        if (cancelButton) {
+
+            cancelButton.onclick =
+                returnToDashboard;
+        }
+
+
+        const form =
+            document.querySelector(
+                "#careerly-profile-form"
+            );
+
+        if (form) {
+
+            form.addEventListener(
+                "submit",
+                handleProfileSave
+            );
+        }
+    }
+
+
+    // =========================================================
+    // SAVE PROFILE
+    // =========================================================
+
+    function handleProfileSave(event) {
+
+        event.preventDefault();
+
+        const name =
+            document
+                .querySelector("#profile-name")
+                .value
+                .trim();
+
+        const email =
+            document
+                .querySelector("#profile-email")
+                .value
+                .trim()
+                .toLowerCase();
+
+        const jobTitle =
+            document
+                .querySelector("#profile-job-title")
+                .value
+                .trim();
+
+        const location =
+            document
+                .querySelector("#profile-location")
+                .value
+                .trim();
+
+        const about =
+            document
+                .querySelector("#profile-about")
+                .value
+                .trim();
+
+        const skills =
+            document
+                .querySelector("#profile-skills")
+                .value
+                .split(",")
+                .map(skill => skill.trim())
+                .filter(Boolean);
+
+        const message =
+            document.querySelector(
+                "#profile-save-message"
+            );
+
+
+        if (name.length < 2) {
+
+            message.textContent =
+                "Please enter your full name.";
+
+            message.className =
+                "careerly-save-message error";
+
+            return;
+        }
+
+
+        if (
+            !document
+                .querySelector("#profile-email")
+                .checkValidity()
+        ) {
+
+            message.textContent =
+                "Please enter a valid email address.";
+
+            message.className =
+                "careerly-save-message error";
+
+            return;
+        }
+
+
+        if (!jobTitle) {
+
+            message.textContent =
+                "Please enter your job title.";
+
+            message.className =
+                "careerly-save-message error";
+
+            return;
+        }
+
+
+        const profile = {
+            name,
+            email,
+            jobTitle,
+            location,
+            about,
+            skills
+        };
+
+        saveProfile(profile);
+
+
+        // Update account email/name too
+        const account =
+            getRegisteredAccount();
+
+        if (account) {
+
+            account.name = name;
+            account.email = email;
+
+            localStorage.setItem(
+                "careerlyAccount",
+                JSON.stringify(account)
+            );
+        }
+
+
+        // Update logged-in session
+        const user =
+            getUser();
+
+        if (user) {
+
+            user.name = name;
+            user.email = email;
+
+            localStorage.setItem(
+                "careerlyUser",
+                JSON.stringify(user)
+            );
+        }
+
+
+        updateUser(user);
+
+
+        message.textContent =
+            "Profile saved successfully!";
+
+        message.className =
+            "careerly-save-message success";
+
+
+        setTimeout(() => {
+
+            message.textContent = "";
+
+        }, 3000);
+    }
+
+
+    // =========================================================
+    // SETTINGS SCREEN
+    // =========================================================
+
+    function openSettingsScreen() {
+
+        if (!dashboard) return;
+
+        dashboard.hidden = true;
+
+        removeProfileScreen();
+        removeSettingsScreen();
+
+        const settings =
+            getSettings();
+
+        const screen =
+            document.createElement("div");
+
+        screen.id = "settings-screen";
+
+        screen.innerHTML = `
+
+            <div class="careerly-page">
+
+                <header class="careerly-page-header">
+
+                    <div>
+                        <span class="careerly-page-label">
+                            YOUR ACCOUNT
+                        </span>
+
+                        <h1>
+                            Settings
+                        </h1>
+
+                        <p>
+                            Control your notifications,
+                            job alerts, and profile preferences.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="careerly-back-button"
+                        id="settings-back-button"
+                    >
+                        ← Back to dashboard
+                    </button>
+
+                </header>
+
+
+                <div class="careerly-settings-layout">
+
+                    <section class="careerly-settings-card">
+
+                        <div class="careerly-card-heading">
+
+                            <div>
+                                <span>
+                                    NOTIFICATIONS
+                                </span>
+
+                                <h2>
+                                    Stay up to date
+                                </h2>
+                            </div>
+
+                            <span class="careerly-settings-icon">
+                                ♧
+                            </span>
+
+                        </div>
+
+
+                        <div class="careerly-setting-row">
+
+                            <div>
+                                <strong>
+                                    Email notifications
+                                </strong>
+
+                                <p>
+                                    Receive important updates
+                                    about your Careerly account.
+                                </p>
+                            </div>
+
+                            <label class="careerly-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="setting-email-notifications"
+                                    ${settings.emailNotifications ? "checked" : ""}
+                                >
+
+                                <span></span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="careerly-setting-row">
+
+                            <div>
+                                <strong>
+                                    Job alerts
+                                </strong>
+
+                                <p>
+                                    Get notified when new jobs
+                                    match your preferences.
+                                </p>
+                            </div>
+
+                            <label class="careerly-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="setting-job-alerts"
+                                    ${settings.jobAlerts ? "checked" : ""}
+                                >
+
+                                <span></span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="careerly-setting-row">
+
+                            <div>
+                                <strong>
+                                    Application updates
+                                </strong>
+
+                                <p>
+                                    Receive updates about your
+                                    applications and interviews.
+                                </p>
+                            </div>
+
+                            <label class="careerly-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="setting-application-updates"
+                                    ${settings.applicationUpdates ? "checked" : ""}
+                                >
+
+                                <span></span>
+
+                            </label>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="careerly-settings-card">
+
+                        <div class="careerly-card-heading">
+
+                            <div>
+                                <span>
+                                    PRIVACY
+                                </span>
+
+                                <h2>
+                                    Profile visibility
+                                </h2>
+                            </div>
+
+                            <span class="careerly-settings-icon">
+                                ◎
+                            </span>
+
+                        </div>
+
+
+                        <div class="careerly-setting-row">
+
+                            <div>
+                                <strong>
+                                    Make my profile visible
+                                </strong>
+
+                                <p>
+                                    Allow employers to discover
+                                    your Careerly profile.
+                                </p>
+                            </div>
+
+                            <label class="careerly-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="setting-profile-visibility"
+                                    ${settings.profileVisibility ? "checked" : ""}
+                                >
+
+                                <span></span>
+
+                            </label>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="careerly-settings-card careerly-danger-card">
+
+                        <div class="careerly-card-heading">
+
+                            <div>
+                                <span>
+                                    ACCOUNT
+                                </span>
+
+                                <h2>
+                                    Account information
+                                </h2>
+                            </div>
+
+                        </div>
+
+                        <p class="careerly-account-note">
+                            Your Careerly account is stored locally
+                            in this browser for this demo project.
+                        </p>
+
+                        <div class="careerly-account-info">
+
+                            <span>
+                                Current account
+                            </span>
+
+                            <strong>
+                                ${escapeHTML(
+                                    getUser()?.email || "Not signed in"
+                                )}
+                            </strong>
+
+                        </div>
+
+                    </section>
+
+
+                    <div
+                        id="settings-save-message"
+                        class="careerly-save-message"
+                    ></div>
+
+
+                    <div class="careerly-form-actions settings-actions">
+
+                        <button
+                            type="button"
+                            class="careerly-cancel-button"
+                            id="settings-reset-button"
+                        >
+                            Reset
+                        </button>
+
+                        <button
+                            type="button"
+                            class="careerly-save-button"
+                            id="settings-save-button"
+                        >
+                            Save settings
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(screen);
+
+        injectSettingsStyles();
+
+
+        const backButton =
+            document.querySelector(
+                "#settings-back-button"
+            );
+
+        if (backButton) {
+
+            backButton.onclick =
+                returnToDashboard;
+        }
+
+
+        const saveButton =
+            document.querySelector(
+                "#settings-save-button"
+            );
+
+        if (saveButton) {
+
+            saveButton.onclick =
+                handleSettingsSave;
+        }
+
+
+        const resetButton =
+            document.querySelector(
+                "#settings-reset-button"
+            );
+
+        if (resetButton) {
+
+            resetButton.onclick = () => {
+
+                const confirmed =
+                    confirm(
+                        "Reset all settings to their default values?"
+                    );
+
+                if (!confirmed) return;
+
+                document.querySelector(
+                    "#setting-email-notifications"
+                ).checked = true;
+
+                document.querySelector(
+                    "#setting-job-alerts"
+                ).checked = true;
+
+                document.querySelector(
+                    "#setting-application-updates"
+                ).checked = true;
+
+                document.querySelector(
+                    "#setting-profile-visibility"
+                ).checked = true;
+            };
+        }
+    }
+
+
+    // =========================================================
+    // SAVE SETTINGS
+    // =========================================================
+
+    function handleSettingsSave() {
+
+        const settings = {
+
+            emailNotifications:
+                document.querySelector(
+                    "#setting-email-notifications"
+                ).checked,
+
+            jobAlerts:
+                document.querySelector(
+                    "#setting-job-alerts"
+                ).checked,
+
+            applicationUpdates:
+                document.querySelector(
+                    "#setting-application-updates"
+                ).checked,
+
+            profileVisibility:
+                document.querySelector(
+                    "#setting-profile-visibility"
+                ).checked
+        };
+
+        saveSettings(settings);
+
+        const message =
+            document.querySelector(
+                "#settings-save-message"
+            );
+
+        message.textContent =
+            "Settings saved successfully!";
+
+        message.className =
+            "careerly-save-message success";
+
+        setTimeout(() => {
+
+            message.textContent = "";
+
+        }, 3000);
+    }
+
+
+    // =========================================================
+    // RETURN TO DASHBOARD
+    // =========================================================
+
+    function returnToDashboard() {
+
+        removeProfileScreen();
+        removeSettingsScreen();
+
+        if (dashboard) {
+            dashboard.hidden = false;
+        }
+
+        const user =
+            getUser();
+
+        if (user) {
+            updateUser(user);
+            updateLoggedInNavigation();
+            setupDashboardFunctions();
+        }
+    }
+
+
+    // =========================================================
+    // SEARCH
+    // =========================================================
 
     function searchJobs(searchTerm) {
 
         const term =
-            searchTerm.trim().toLowerCase();
+            searchTerm
+                .trim()
+                .toLowerCase();
 
         document
             .querySelectorAll(".job-card")
@@ -702,14 +1890,17 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
-    // ==========================================
+
+    // =========================================================
     // FILTER JOBS
-    // ==========================================
+    // =========================================================
 
     function filterJobs(filterName) {
 
         const cards =
-            document.querySelectorAll(".job-card");
+            document.querySelectorAll(
+                ".job-card"
+            );
 
         cards.forEach(card => {
 
@@ -719,22 +1910,33 @@ document.addEventListener("DOMContentLoaded", () => {
             let show = true;
 
             if (filterName === "remote") {
-                show = text.includes("remote");
+
+                show =
+                    text.includes("remote");
             }
 
             else if (filterName === "on-site") {
+
                 show =
                     text.includes("on-site") ||
                     text.includes("onsite");
             }
 
             else if (filterName === "full-time") {
+
                 show =
                     text.includes("full-time") ||
                     text.includes("full time");
             }
 
             else if (filterName === "all jobs") {
+
+                show = true;
+            }
+
+            // "Filters" button should not hide jobs
+            else if (filterName === "filters") {
+
                 show = true;
             }
 
@@ -743,96 +1945,713 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
+
+    // =========================================================
     // LOGOUT
-    // ==========================================
+    // =========================================================
 
     function signOut() {
 
-        localStorage.removeItem("careerlyUser");
+        localStorage.removeItem(
+            "careerlyUser"
+        );
+
+        removeProfileScreen();
+        removeSettingsScreen();
 
         if (dashboard) {
             dashboard.hidden = true;
         }
 
         const profileMenu =
-            document.querySelector(".profile-menu");
+            document.querySelector(
+                ".profile-menu"
+            );
 
         if (profileMenu) {
-            profileMenu.classList.remove("visible");
+            profileMenu.classList.remove(
+                "visible"
+            );
         }
 
         const signoutButton =
-            document.querySelector("#top-signout");
+            document.querySelector(
+                "#top-signout"
+            );
 
         if (signoutButton) {
             signoutButton.remove();
         }
 
         const guestActions =
-            document.querySelector(".guest-actions");
+            document.querySelector(
+                ".guest-actions"
+            );
 
         if (guestActions) {
             guestActions.style.display = "";
         }
 
         const memberActions =
-            document.querySelector(".member-actions");
+            document.querySelector(
+                ".member-actions"
+            );
 
         if (memberActions) {
             memberActions.style.display = "";
         }
 
-        // Keep the registered account.
-        // Only remove the current login session.
         createLoginScreen();
     }
 
-    // ==========================================
-    // REMOVE SIGNUP SCREEN
-    // ==========================================
+
+    // =========================================================
+    // REMOVE SCREENS
+    // =========================================================
 
     function removeSignupScreen() {
 
         const screen =
-            document.querySelector("#signup-screen");
+            document.querySelector(
+                "#signup-screen"
+            );
 
         if (screen) {
             screen.remove();
         }
 
         const style =
-            document.querySelector("#signup-screen-style");
+            document.querySelector(
+                "#signup-screen-style"
+            );
 
         if (style) {
             style.remove();
         }
     }
 
-    // ==========================================
-    // REMOVE LOGIN SCREEN
-    // ==========================================
 
     function removeLoginScreen() {
 
         const screen =
-            document.querySelector("#login-screen");
+            document.querySelector(
+                "#login-screen"
+            );
 
         if (screen) {
             screen.remove();
         }
 
         const style =
-            document.querySelector("#login-screen-style");
+            document.querySelector(
+                "#login-screen-style"
+            );
 
         if (style) {
             style.remove();
         }
     }
 
-    // ==========================================
+
+    function removeProfileScreen() {
+
+        const screen =
+            document.querySelector(
+                "#profile-screen"
+            );
+
+        if (screen) {
+            screen.remove();
+        }
+
+        const style =
+            document.querySelector(
+                "#careerly-profile-style"
+            );
+
+        if (style) {
+            style.remove();
+        }
+    }
+
+
+    function removeSettingsScreen() {
+
+        const screen =
+            document.querySelector(
+                "#settings-screen"
+            );
+
+        if (screen) {
+            screen.remove();
+        }
+
+        const style =
+            document.querySelector(
+                "#careerly-settings-style"
+            );
+
+        if (style) {
+            style.remove();
+        }
+    }
+
+
+    // =========================================================
+    // ESCAPE HTML
+    // =========================================================
+
+    function escapeHTML(value) {
+
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function escapeAttribute(value) {
+        return escapeHTML(value);
+    }
+
+
+    // =========================================================
+    // PROFILE SCREEN STYLES
+    // =========================================================
+
+    function injectProfileStyles() {
+
+        if (
+            document.querySelector(
+                "#careerly-profile-style"
+            )
+        ) {
+            return;
+        }
+
+        const style =
+            document.createElement("style");
+
+        style.id =
+            "careerly-profile-style";
+
+        style.textContent = `
+
+            #profile-screen {
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                overflow-y: auto;
+                background: #f6f7f3;
+                color: #27323b;
+                font-family:
+                    "Trebuchet MS",
+                    "Segoe UI",
+                    sans-serif;
+            }
+
+            .careerly-page {
+                width: min(1120px, calc(100% - 50px));
+                margin: 0 auto;
+                padding: 55px 0 70px;
+            }
+
+            .careerly-page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 30px;
+                margin-bottom: 35px;
+            }
+
+            .careerly-page-label {
+                color: #63917a;
+                font-size: 10px;
+                font-weight: 800;
+                letter-spacing: .12em;
+            }
+
+            .careerly-page-header h1 {
+                margin: 8px 0 8px;
+                color: #264d41;
+                font: 400 43px Georgia, serif;
+                letter-spacing: -1.5px;
+            }
+
+            .careerly-page-header p {
+                max-width: 500px;
+                margin: 0;
+                color: #7b8588;
+                font-size: 12px;
+                line-height: 1.6;
+            }
+
+            .careerly-back-button {
+                min-height: 40px;
+                padding: 0 17px;
+                border: 1px solid #d8e3db;
+                border-radius: 8px;
+                color: #287b5c;
+                background: white;
+                cursor: pointer;
+                font-size: 10px;
+                font-weight: 700;
+            }
+
+            .careerly-back-button:hover {
+                background: #edf7f0;
+            }
+
+            .careerly-profile-layout {
+                display: grid;
+                grid-template-columns: 280px minmax(0, 1fr);
+                gap: 25px;
+                align-items: start;
+            }
+
+            .careerly-profile-card,
+            .careerly-form-card {
+                border: 1px solid #e6e9e5;
+                border-radius: 14px;
+                background: #fff;
+            }
+
+            .careerly-profile-card {
+                padding: 30px 24px;
+                text-align: center;
+            }
+
+            .careerly-profile-avatar {
+                display: grid;
+                place-items: center;
+                width: 82px;
+                height: 82px;
+                margin: 0 auto 18px;
+                color: white;
+                background: #88b8a5;
+                border-radius: 50%;
+                font-size: 23px;
+                font-weight: 700;
+            }
+
+            .careerly-profile-card h2 {
+                margin: 0;
+                color: #29383c;
+                font: 600 20px Georgia, serif;
+            }
+
+            .careerly-profile-card > p {
+                margin: 8px 0 4px;
+                color: #287b5c;
+                font-size: 11px;
+                font-weight: 700;
+            }
+
+            .careerly-profile-card > span {
+                color: #929d99;
+                font-size: 10px;
+            }
+
+            .careerly-profile-divider {
+                height: 1px;
+                margin: 25px 0;
+                background: #e6e9e5;
+            }
+
+            .careerly-profile-stat strong {
+                display: block;
+                color: #287b5c;
+                font: 600 25px Georgia, serif;
+            }
+
+            .careerly-profile-stat span {
+                display: block;
+                margin-top: 4px;
+                color: #9aa39f;
+                font-size: 9px;
+            }
+
+            .careerly-form-card {
+                padding: 28px;
+            }
+
+            .careerly-card-heading {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 25px;
+            }
+
+            .careerly-card-heading > div > span {
+                color: #8ca097;
+                font-size: 9px;
+                font-weight: 800;
+                letter-spacing: .1em;
+            }
+
+            .careerly-card-heading h2 {
+                margin: 5px 0 0;
+                color: #34413f;
+                font: 600 19px Georgia, serif;
+            }
+
+            .careerly-status {
+                padding: 7px 10px;
+                border-radius: 20px;
+                color: #39825f;
+                background: #e9f5ec;
+                font-size: 9px;
+                font-weight: 700;
+            }
+
+            .careerly-form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 17px;
+            }
+
+            .careerly-field {
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+                margin-bottom: 17px;
+            }
+
+            .careerly-field label {
+                color: #62706b;
+                font-size: 10px;
+                font-weight: 700;
+            }
+
+            .careerly-field input,
+            .careerly-field textarea {
+                width: 100%;
+                padding: 12px 13px;
+                border: 1px solid #dfe5e0;
+                border-radius: 8px;
+                outline: none;
+                color: #27323b;
+                background: #fff;
+                font-size: 11px;
+                resize: vertical;
+            }
+
+            .careerly-field input {
+                min-height: 42px;
+            }
+
+            .careerly-field input:focus,
+            .careerly-field textarea:focus {
+                border-color: #6bb18e;
+                box-shadow: 0 0 0 3px #e4f3e8;
+            }
+
+            .careerly-field small {
+                color: #9aa39f;
+                font-size: 9px;
+            }
+
+            .careerly-form-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-top: 5px;
+            }
+
+            .careerly-cancel-button,
+            .careerly-save-button {
+                min-height: 39px;
+                padding: 0 17px;
+                border-radius: 7px;
+                cursor: pointer;
+                font-size: 10px;
+                font-weight: 700;
+            }
+
+            .careerly-cancel-button {
+                border: 1px solid #dfe5e0;
+                color: #788680;
+                background: white;
+            }
+
+            .careerly-save-button {
+                border: 0;
+                color: white;
+                background: #287b5c;
+            }
+
+            .careerly-save-message {
+                min-height: 15px;
+                margin: 5px 0 12px;
+                font-size: 10px;
+                font-weight: 700;
+            }
+
+            .careerly-save-message.success {
+                color: #39825f;
+            }
+
+            .careerly-save-message.error {
+                color: #d9534f;
+            }
+
+            @media (max-width: 800px) {
+
+                .careerly-profile-layout {
+                    grid-template-columns: 1fr;
+                }
+
+                .careerly-profile-card {
+                    text-align: left;
+                }
+
+                .careerly-profile-avatar {
+                    margin-left: 0;
+                }
+
+            }
+
+            @media (max-width: 600px) {
+
+                .careerly-page {
+                    width: calc(100% - 30px);
+                    padding: 30px 0 45px;
+                }
+
+                .careerly-page-header {
+                    flex-direction: column;
+                }
+
+                .careerly-page-header h1 {
+                    font-size: 35px;
+                }
+
+                .careerly-form-grid {
+                    grid-template-columns: 1fr;
+                    gap: 0;
+                }
+
+                .careerly-form-card {
+                    padding: 20px;
+                }
+
+                .careerly-form-actions {
+                    flex-direction: column-reverse;
+                }
+
+                .careerly-cancel-button,
+                .careerly-save-button {
+                    width: 100%;
+                }
+            }
+
+        `;
+
+        document.head.appendChild(style);
+    }
+
+
+    // =========================================================
+    // SETTINGS SCREEN STYLES
+    // =========================================================
+
+    function injectSettingsStyles() {
+
+        if (
+            document.querySelector(
+                "#careerly-settings-style"
+            )
+        ) {
+            return;
+        }
+
+        const style =
+            document.createElement("style");
+
+        style.id =
+            "careerly-settings-style";
+
+        style.textContent = `
+
+            #settings-screen {
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                overflow-y: auto;
+                background: #f6f7f3;
+                color: #27323b;
+                font-family:
+                    "Trebuchet MS",
+                    "Segoe UI",
+                    sans-serif;
+            }
+
+            .careerly-settings-layout {
+                display: grid;
+                gap: 17px;
+                max-width: 850px;
+            }
+
+            .careerly-settings-card {
+                padding: 26px 28px;
+                border: 1px solid #e6e9e5;
+                border-radius: 14px;
+                background: white;
+            }
+
+            .careerly-settings-card .careerly-card-heading {
+                margin-bottom: 8px;
+            }
+
+            .careerly-settings-icon {
+                display: grid;
+                place-items: center;
+                width: 35px;
+                height: 35px;
+                color: #287b5c;
+                background: #edf7f0;
+                border-radius: 9px;
+                font-size: 16px;
+            }
+
+            .careerly-setting-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 20px;
+                padding: 19px 0;
+                border-top: 1px solid #edf0ed;
+            }
+
+            .careerly-setting-row strong {
+                display: block;
+                color: #4b5956;
+                font-size: 11px;
+            }
+
+            .careerly-setting-row p {
+                max-width: 550px;
+                margin: 5px 0 0;
+                color: #929d99;
+                font-size: 9px;
+                line-height: 1.5;
+            }
+
+            .careerly-toggle {
+                position: relative;
+                display: block;
+                width: 43px;
+                height: 23px;
+                flex: 0 0 auto;
+            }
+
+            .careerly-toggle input {
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+
+            .careerly-toggle span {
+                position: absolute;
+                inset: 0;
+                border-radius: 20px;
+                background: #dfe5e1;
+                cursor: pointer;
+                transition: .2s;
+            }
+
+            .careerly-toggle span::before {
+                content: "";
+                position: absolute;
+                left: 3px;
+                top: 3px;
+                width: 17px;
+                height: 17px;
+                border-radius: 50%;
+                background: white;
+                box-shadow: 0 1px 3px rgba(0,0,0,.15);
+                transition: .2s;
+            }
+
+            .careerly-toggle input:checked + span {
+                background: #287b5c;
+            }
+
+            .careerly-toggle input:checked + span::before {
+                transform: translateX(20px);
+            }
+
+            .careerly-danger-card {
+                background: #fff;
+            }
+
+            .careerly-account-note {
+                margin: 0 0 15px;
+                color: #8b9692;
+                font-size: 10px;
+                line-height: 1.5;
+            }
+
+            .careerly-account-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 15px;
+                padding: 13px;
+                border-radius: 8px;
+                background: #f5f8f5;
+            }
+
+            .careerly-account-info span {
+                color: #929d99;
+                font-size: 9px;
+            }
+
+            .careerly-account-info strong {
+                color: #53605c;
+                font-size: 10px;
+            }
+
+            .settings-actions {
+                justify-content: flex-end;
+                padding-bottom: 30px;
+            }
+
+            @media (max-width: 600px) {
+
+                .careerly-settings-card {
+                    padding: 21px;
+                }
+
+                .careerly-setting-row {
+                    align-items: flex-start;
+                }
+
+                .careerly-account-info {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .settings-actions {
+                    flex-direction: column-reverse;
+                }
+
+                .settings-actions button {
+                    width: 100%;
+                }
+            }
+
+        `;
+
+        document.head.appendChild(style);
+    }
+
+
+    // =========================================================
     // SIGNUP STYLES
-    // ==========================================
+    // =========================================================
 
     function injectSignupStyles() {
 
@@ -847,7 +2666,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const style =
             document.createElement("style");
 
-        style.id = "signup-screen-style";
+        style.id =
+            "signup-screen-style";
 
         style.textContent = `
 
@@ -1052,9 +2872,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.head.appendChild(style);
     }
 
-    // ==========================================
+
+    // =========================================================
     // LOGIN STYLES
-    // ==========================================
+    // =========================================================
 
     function injectLoginStyles() {
 
@@ -1069,7 +2890,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const style =
             document.createElement("style");
 
-        style.id = "login-screen-style";
+        style.id =
+            "login-screen-style";
 
         style.textContent = `
 
@@ -1274,12 +3096,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.head.appendChild(style);
     }
 
-    // ==========================================
-    // EXISTING HTML AUTH MODAL
-    // ==========================================
-    // The old modal is kept available for the original
-    // HTML buttons, but its forms are NOT connected to
-    // the new full-screen signup/login system.
+
+    // =========================================================
+    // EXISTING AUTH MODAL
+    // =========================================================
 
     function setupExistingAuth() {
 
@@ -1290,7 +3110,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         openAuthButtons.forEach(button => {
 
-            button.addEventListener("click", () => {
+            button.onclick = () => {
 
                 const mode =
                     button.getAttribute(
@@ -1302,8 +3122,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 switchAuthTab(mode);
-            });
+            };
         });
+
 
         const closeButton =
             document.querySelector(
@@ -1312,34 +3133,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (closeButton) {
 
-            closeButton.addEventListener(
-                "click",
-                () => {
+            closeButton.onclick = () => {
+
+                if (authBackdrop) {
                     authBackdrop.hidden = true;
                 }
-            );
+            };
         }
+
 
         if (authBackdrop) {
 
-            authBackdrop.addEventListener(
-                "click",
-                event => {
+            authBackdrop.onclick = event => {
 
-                    if (
-                        event.target === authBackdrop
-                    ) {
-                        authBackdrop.hidden = true;
-                    }
+                if (
+                    event.target === authBackdrop
+                ) {
+                    authBackdrop.hidden = true;
                 }
-            );
+            };
         }
+
 
         document
             .querySelectorAll("[data-auth-tab]")
             .forEach(tab => {
 
-                tab.addEventListener("click", () => {
+                tab.onclick = () => {
 
                     const mode =
                         tab.getAttribute(
@@ -1347,17 +3167,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         );
 
                     switchAuthTab(mode);
-                });
+                };
             });
-
-        // IMPORTANT:
-        // Do NOT attach the old modal's forms
-        // to handleSignup or handleLogin.
     }
 
-    // ==========================================
+
+    // =========================================================
     // AUTH TAB SWITCHING
-    // ==========================================
+    // =========================================================
 
     function switchAuthTab(mode) {
 
@@ -1373,14 +3190,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             });
 
+        // Your HTML uses data-auth-form
         const signInForm =
             document.querySelector(
-                "[data-signin-form]"
+                '[data-auth-form="signin"]'
             );
 
         const signUpForm =
             document.querySelector(
-                "[data-signup-form]"
+                '[data-auth-form="signup"]'
             );
 
         if (signInForm) {
@@ -1395,7 +3213,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const title =
             document.querySelector(
-                "[data-auth-title]"
+                "#auth-title"
             );
 
         if (title) {
@@ -1407,13 +3225,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ==========================================
+
+    // =========================================================
     // START APPLICATION
-    // ==========================================
+    // =========================================================
 
     setupExistingAuth();
 
-    const loggedInUser = getUser();
+    const loggedInUser =
+        getUser();
 
     if (loggedInUser) {
 
@@ -1423,4 +3243,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
         createSignupScreen();
     }
+
 });
