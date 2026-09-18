@@ -1,590 +1,294 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    const landingPage = document.querySelector(".landing-page");
-    const dashboard = document.querySelector("#dashboard");
-    const authBackdrop = document.querySelector("[data-auth-backdrop]");
-
-    const savedUser = localStorage.getItem("careerlyUser");
-
-    landingPage.hidden = true;
-    dashboard.hidden = true;
-    if (authBackdrop) authBackdrop.hidden = true;
-
-
-    // =====================================================
-    // CREATE FULL-SCREEN SIGNUP SCREEN
-    // =====================================================
-
-    function createSignupScreen() {
-
-        const screen = document.createElement("div");
-
-        screen.id = "signup-screen";
-
-        screen.innerHTML = `
-            <div class="signup-container">
-
-                <div class="signup-logo">
-                    <span>✦</span>
-                    <strong>careerly</strong>
-                </div>
-
-                <div class="signup-content">
-
-                    <p class="signup-eyebrow">WELCOME TO CAREERLY</p>
-
-                    <h1>Create your account.</h1>
-
-                    <p class="signup-description">
-                        Start discovering meaningful opportunities and
-                        take the next step in your career.
-                    </p>
-
-                    <form id="signup-screen-form">
-
-                        <label>Full name</label>
-                        <input
-                            type="text"
-                            id="screen-name"
-                            placeholder="Jordan Davis"
-                            required
-                        >
-
-                        <label>Email address</label>
-                        <input
-                            type="email"
-                            id="screen-email"
-                            placeholder="you@example.com"
-                            required
-                        >
-
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            id="screen-password"
-                            placeholder="At least 6 characters"
-                            minlength="6"
-                            required
-                        >
-
-                        <button type="submit">
-                            Create account
-                            <span>→</span>
-                        </button>
-
-                        <p id="signup-error"></p>
-
-                    </form>
-
-                </div>
-
-                <div class="signup-decoration">
-                    <div class="signup-sun"></div>
-                    <div class="signup-card signup-card-back"></div>
-
-                    <div class="signup-card signup-card-front">
-                        <small>YOUR NEXT ROLE</small>
-                        <strong>
-                            Senior Product<br>
-                            Designer
-                        </strong>
-                        <span>Lumen Studio · New York</span>
-                    </div>
-
-                    <span class="signup-star">✦</span>
-                </div>
-
-            </div>
-        `;
-
-
-        const style = document.createElement("style");
-
-        style.textContent = `
-
-            #signup-screen {
-                position: fixed;
-                inset: 0;
-                z-index: 9999;
-                background: #f6f7f3;
-                overflow-y: auto;
-                font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-                color: #27323b;
-            }
-
-            .signup-container {
-                min-height: 100vh;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                align-items: center;
-                gap: 70px;
-                max-width: 1100px;
-                margin: auto;
-                padding: 45px;
-                position: relative;
-            }
-
-            .signup-logo {
-                position: absolute;
-                top: 35px;
-                left: 45px;
-                display: flex;
-                align-items: center;
-                gap: 9px;
-                font: 700 22px Georgia, serif;
-            }
-
-            .signup-logo span {
-                display: grid;
-                place-items: center;
-                width: 28px;
-                height: 28px;
-                color: white;
-                background: #ec765e;
-                border-radius: 9px 9px 9px 2px;
-                transform: rotate(-8deg);
-                font: 16px Arial, sans-serif;
-            }
-
-            .signup-content {
-                max-width: 430px;
-                margin-top: 35px;
-            }
-
-            .signup-eyebrow {
-                margin: 0 0 10px;
-                color: #63917a;
-                font-size: 10px;
-                font-weight: 700;
-                letter-spacing: .1em;
-            }
-
-            .signup-content h1 {
-                margin: 0;
-                color: #264d41;
-                font: 400 55px/.98 Georgia, serif;
-                letter-spacing: -2px;
-            }
-
-            .signup-description {
-                margin: 22px 0 28px;
-                color: #788680;
-                font-size: 13px;
-                line-height: 1.7;
-                max-width: 380px;
-            }
-
-            #signup-screen-form {
-                display: grid;
-                gap: 8px;
-            }
-
-            #signup-screen-form label {
-                margin-top: 7px;
-                color: #62706b;
-                font-size: 10px;
-                font-weight: 700;
-            }
-
-            #signup-screen-form input {
-                width: 100%;
-                height: 43px;
-                padding: 0 12px;
-                border: 1px solid #dfe5e0;
-                border-radius: 7px;
-                outline: none;
-                background: white;
-                color: #27323b;
-                font-size: 11px;
-                box-sizing: border-box;
-            }
-
-            #signup-screen-form input:focus {
-                border-color: #6bb18e;
-                box-shadow: 0 0 0 3px #e4f3e8;
-            }
-
-            #signup-screen-form button {
-                height: 45px;
-                margin-top: 13px;
-                border: 0;
-                border-radius: 7px;
-                background: #287b5c;
-                color: white;
-                cursor: pointer;
-                font-size: 11px;
-                font-weight: 700;
-            }
-
-            #signup-screen-form button span {
-                margin-left: 18px;
-                font-size: 16px;
-            }
-
-            #signup-error {
-                min-height: 12px;
-                margin: 5px 0 0;
-                color: #ec765e;
-                font-size: 9px;
-            }
-
-            .signup-decoration {
-                position: relative;
-                min-height: 500px;
-                background: #dcefe1;
-                border-radius: 48% 48% 14px 14px;
-                overflow: hidden;
-            }
-
-            .signup-sun {
-                position: absolute;
-                top: 65px;
-                left: 25%;
-                width: 180px;
-                height: 180px;
-                background: #f5b87e;
-                border-radius: 50%;
-            }
-
-            .signup-card {
-                position: absolute;
-                border-radius: 12px;
-            }
-
-            .signup-card-back {
-                top: 120px;
-                left: 23%;
-                width: 320px;
-                height: 200px;
-                background: #b7dac1;
-                transform: rotate(9deg);
-            }
-
-            .signup-card-front {
-                top: 145px;
-                left: 18%;
-                width: 320px;
-                height: 210px;
-                padding: 24px;
-                background: white;
-                box-shadow: 0 20px 36px rgba(44,79,62,.13);
-                transform: rotate(-8deg);
-                display: grid;
-                box-sizing: border-box;
-            }
-
-            .signup-card-front small {
-                color: #ec765e;
-                font-size: 8px;
-                font-weight: 800;
-                letter-spacing: .12em;
-            }
-
-            .signup-card-front strong {
-                color: #2b3b3c;
-                font: 600 27px/1.03 Georgia, serif;
-            }
-
-            .signup-card-front span {
-                align-self: end;
-                color: #8b9892;
-                font-size: 10px;
-            }
-
-            .signup-star {
-                position: absolute;
-                top: 100px;
-                right: 17%;
-                color: #ec765e;
-                font-size: 24px;
-            }
-
-            @media (max-width: 750px) {
-
-                .signup-container {
-                    display: block;
-                    padding: 30px 22px;
-                }
-
-                .signup-logo {
-                    position: relative;
-                    top: auto;
-                    left: auto;
-                    margin-bottom: 75px;
-                }
-
-                .signup-content {
-                    margin: 0 auto;
-                }
-
-                .signup-content h1 {
-                    font-size: 48px;
-                }
-
-                .signup-decoration {
-                    display: none;
-                }
-            }
-        `;
-
-        document.head.appendChild(style);
-        document.body.appendChild(screen);
-
-
-        // =================================================
-        // SIGNUP FORM
-        // =================================================
-
-        const form = document.querySelector("#signup-screen-form");
-
-        form.addEventListener("submit", (event) => {
-
-            event.preventDefault();
-
-            const name = document
-                .querySelector("#screen-name")
-                .value
-                .trim();
-
-            const email = document
-                .querySelector("#screen-email")
-                .value
-                .trim();
-
-            const password = document
-                .querySelector("#screen-password")
-                .value;
-
-            const error = document.querySelector("#signup-error");
-
-
-            if (!name || !email || password.length < 6) {
-                error.textContent =
-                    "Please fill in all fields correctly.";
-                return;
-            }
-
-
-            const user = {
-                name: name,
-                email: email
-            };
-
-
-            // Save account
-            localStorage.setItem(
-                "careerlyUser",
-                JSON.stringify(user)
-            );
-
-
-            // Remove signup screen
-            screen.remove();
-
-
-            // Show dashboard
-            showDashboard(user);
-
-        });
-    }
-
-
-    // =====================================================
-    // SHOW DASHBOARD
-    // =====================================================
-
-    function showDashboard(user) {
-
-        dashboard.hidden = false;
-
-        updateUser(user);
-
-        updateLoggedInNavigation();
-
-    }
-
-
-    // =====================================================
-    // UPDATE USER NAME / EMAIL / AVATAR
-    // =====================================================
-
-    function updateUser(user) {
-
-        const nameElement =
-            document.querySelector("[data-user-name]");
-
-        const emailElement =
-            document.querySelector("[data-user-email]");
-
-        const profileName =
-            document.querySelector(".profile-card strong");
-
-        const avatar =
-            document.querySelector(".avatar");
-
-        const miniAvatar =
-            document.querySelector(".mini-avatar");
-
-
-        if (nameElement) {
-            nameElement.textContent = user.name;
-        }
-
-        if (emailElement) {
-            emailElement.textContent = user.email;
-        }
-
-        if (profileName) {
-            profileName.textContent = user.name;
-        }
-
-
-        const initials = user.name
-            .split(" ")
-            .filter(Boolean)
-            .slice(0, 2)
-            .map(word => word[0].toUpperCase())
-            .join("");
-
-
-        if (avatar) {
-            avatar.textContent = initials;
-        }
-
-        if (miniAvatar) {
-            miniAvatar.textContent = initials;
-        }
-    }
-
-
-    // =====================================================
-    // LOGGED-IN NAVIGATION
-    // =====================================================
-
-    function updateLoggedInNavigation() {
-
-        // Hide Sign in / Create account buttons
-        const guestActions =
-            document.querySelector(".guest-actions");
-
-        if (guestActions) {
-            guestActions.style.display = "none";
-        }
-
-
-        // Create a Sign Out button
-        const topActions =
-            document.querySelector(".top-actions");
-
-        if (!topActions) return;
-
-
-        let signoutButton =
-            document.querySelector("#top-signout");
-
-
-        if (!signoutButton) {
-
-            signoutButton = document.createElement("button");
-
-            signoutButton.id = "top-signout";
-            signoutButton.textContent = "Sign out";
-
-            signoutButton.style.cssText = `
-                border: none;
-                background: transparent;
-                color: #6f7977;
-                font-size: 11px;
-                font-weight: 700;
-                cursor: pointer;
-                padding: 8px 4px;
-            `;
-
-            topActions.appendChild(signoutButton);
-
-
-            signoutButton.addEventListener("click", signOut);
-        }
-
-
-        // Show member actions if they exist
-        const memberActions =
-            document.querySelector(".member-actions");
-
-        if (memberActions) {
-            memberActions.style.display = "flex";
-        }
-    }
-
-
-    // =====================================================
-    // SIGN OUT
-    // =====================================================
-
-    function signOut() {
-
-        localStorage.removeItem("careerlyUser");
-
-        dashboard.hidden = true;
-
-        const signupScreen =
-            document.querySelector("#signup-screen");
-
-        if (signupScreen) {
-            signupScreen.remove();
-        }
-
-        const signoutButton =
-            document.querySelector("#top-signout");
-
-        if (signoutButton) {
-            signoutButton.remove();
-        }
-
-        createSignupScreen();
-    }
-
-
-    // =====================================================
-    // CONNECT EXISTING SIGN OUT BUTTON
-    // =====================================================
-
-    const existingSignout =
-        document.querySelector("[data-signout]");
-
-    if (existingSignout) {
-
-        existingSignout.addEventListener(
-            "click",
-            signOut
-        );
-    }
-
-
-    // =====================================================
-    // START APPLICATION
-    // =====================================================
-
-    if (!savedUser) {
-
-        // New user
-        createSignupScreen();
-
-    } else {
-
-        // Returning user
-        try {
-
-            const user = JSON.parse(savedUser);
-
-            showDashboard(user);
-
-        } catch {
-
-            localStorage.removeItem("careerlyUser");
-
-            createSignupScreen();
-        }
-    }
-
+const landingPage = document.querySelector('.landing-page');
+const dashboard = document.getElementById('dashboard');
+const authBackdrop = document.querySelector('.auth-backdrop');
+const authStatus = document.querySelector('.auth-status');
+const signInForm = document.querySelector('[data-auth-form="signin"]');
+const signUpForm = document.querySelector('[data-auth-form="signup"]');
+const authTabs = document.querySelectorAll('.auth-tab');
+const authForms = document.querySelectorAll('.auth-form');
+const guestActions = document.querySelector('.guest-actions');
+const memberActions = document.querySelector('.member-actions');
+const userName = document.querySelector('[data-user-name]');
+const userEmail = document.querySelector('[data-user-email]');
+const profileMenu = document.querySelector('.profile-menu');
+const miniAvatar = document.querySelector('[data-profile-menu]');
+const profileCards = document.querySelectorAll('.profile-card .avatar, .mini-avatar');
+const navLinks = document.querySelectorAll('.nav-link');
+const viewPanels = document.querySelectorAll('.dashboard-view');
+const saveButtons = document.querySelectorAll('.save-button');
+const mySavedJobsList = document.querySelector('#saved-jobs-list');
+const savedCounter = document.querySelector('.saved-count');
+const savedJobsSummary = document.querySelector('#saved-jobs-summary');
+const profileForm = document.getElementById('profile-form');
+const profileStatus = document.getElementById('profile-status');
+
+let activeView = 'jobs';
+let savedJobs = [
+  { title: 'Brand Designer', company: 'Northstar', location: 'Remote', tag: 'north' },
+  { title: 'Design Lead', company: 'Lumen Studio', location: 'Hybrid', tag: 'lumen' },
+  { title: 'Senior Product Designer', company: 'Lumen Studio', location: 'New York, NY', tag: 'lumen' }
+];
+
+function setAuthTab(mode) {
+  const activeTab = document.querySelector(`[data-auth-tab="${mode}"]`);
+
+  authTabs.forEach((tab) => tab.classList.toggle('active', tab === activeTab));
+  authForms.forEach((form) => {
+    const isSelected = form.dataset.authForm === mode;
+    form.hidden = !isSelected;
+  });
+}
+
+function openAuth(mode = 'signin') {
+  authBackdrop.hidden = false;
+  document.body.classList.add('modal-open');
+  setAuthTab(mode);
+  authStatus.textContent = '';
+}
+
+function closeAuth() {
+  authBackdrop.hidden = true;
+  document.body.classList.remove('modal-open');
+}
+
+function showDashboard() {
+  landingPage.hidden = true;
+  dashboard.hidden = false;
+}
+
+function showLanding() {
+  landingPage.hidden = false;
+  dashboard.hidden = true;
+}
+
+function updateUserProfile(name, email) {
+  const safeName = name || 'Jordan Davis';
+  const safeEmail = email || 'jordan@example.com';
+
+  userName.textContent = safeName;
+  userEmail.textContent = safeEmail;
+
+  document.querySelectorAll('.profile-card strong').forEach((label) => {
+    label.textContent = safeName;
+  });
+
+  document.querySelectorAll('.avatar, .mini-avatar').forEach((avatar) => {
+    const initials = safeName
+      .split(' ')
+      .map((word) => word[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+
+    avatar.textContent = initials;
+  });
+}
+
+function setActiveView(viewName) {
+  activeView = viewName;
+
+  viewPanels.forEach((panel) => {
+    const isVisible = panel.dataset.view === viewName;
+    panel.classList.toggle('hidden', !isVisible);
+  });
+
+  navLinks.forEach((link) => {
+    const isActive = link.dataset.view === viewName;
+    link.classList.toggle('active', isActive);
+  });
+}
+
+function renderSavedJobs() {
+  if (!mySavedJobsList) return;
+
+  mySavedJobsList.innerHTML = '';
+
+  savedJobs.forEach((job) => {
+    const item = document.createElement('article');
+    item.className = 'saved-job-card';
+    item.innerHTML = `
+      <div class="small-logo logo-${job.tag}">${job.company.charAt(0)}</div>
+      <div>
+        <strong>${job.title}</strong>
+        <span>${job.company} · ${job.location}</span>
+      </div>
+      <button type="button" class="inline-remove" data-remove-job="${job.title}">Remove</button>
+    `;
+    mySavedJobsList.appendChild(item);
+  });
+
+  const count = savedJobs.length;
+  if (savedCounter) savedCounter.textContent = count;
+  if (savedJobsSummary) savedJobsSummary.textContent = `${count} jobs saved`;
+}
+
+function toggleSaveButton(button) {
+  const title = button.dataset.saveTitle;
+  const company = button.dataset.company;
+  const location = button.dataset.location;
+  const tag = button.dataset.tag;
+
+  const jobExists = savedJobs.some((job) => job.title === title && job.company === company);
+
+  if (jobExists) {
+    savedJobs = savedJobs.filter((job) => !(job.title === title && job.company === company));
+    button.classList.remove('saved');
+    button.textContent = '♡';
+    button.setAttribute('aria-label', `Save ${title}`);
+  } else {
+    savedJobs.unshift({ title, company, location, tag });
+    button.classList.add('saved');
+    button.textContent = '♥';
+    button.setAttribute('aria-label', `Unsave ${title}`);
+  }
+
+  renderSavedJobs();
+}
+
+function signOut() {
+  profileMenu.classList.remove('visible');
+  updateUserProfile('Jordan Davis', 'jordan@example.com');
+  showLanding();
+  setActiveView('jobs');
+}
+
+authTabs.forEach((tab) => {
+  tab.addEventListener('click', () => setAuthTab(tab.dataset.authTab));
 });
+
+document.querySelectorAll('[data-open-auth]').forEach((button) => {
+  button.addEventListener('click', () => openAuth(button.dataset.openAuth));
+});
+
+document.querySelector('[data-close-auth]').addEventListener('click', closeAuth);
+
+authBackdrop.addEventListener('click', (event) => {
+  if (event.target === authBackdrop) closeAuth();
+});
+
+signInForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value.trim();
+
+  if (!email || !password || password.length < 6) {
+    authStatus.textContent = 'Please enter a valid email and password.';
+    return;
+  }
+
+  authStatus.textContent = 'Signing in...';
+  setTimeout(() => {
+    const safeName = document.getElementById('signin-email').value.includes('admin')
+      ? 'Jordan Davis'
+      : 'Jordan Davis';
+    updateUserProfile(safeName, email);
+    closeAuth();
+    showDashboard();
+    setActiveView('jobs');
+  }, 400);
+});
+
+signUpForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value.trim();
+
+  if (!name || !email || !password || password.length < 6) {
+    authStatus.textContent = 'Please complete all fields with a valid password.';
+    return;
+  }
+
+  authStatus.textContent = 'Account created successfully!';
+  setTimeout(() => {
+    updateUserProfile(name, email);
+    closeAuth();
+    showDashboard();
+    setActiveView('jobs');
+  }, 400);
+});
+
+navLinks.forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    setActiveView(link.dataset.view);
+  });
+});
+
+document.querySelectorAll('[data-view-link]').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    setActiveView(link.dataset.viewLink);
+  });
+});
+
+miniAvatar.addEventListener('click', () => {
+  profileMenu.classList.toggle('visible');
+});
+
+document.addEventListener('click', (event) => {
+  if (!profileMenu.contains(event.target) && !miniAvatar.contains(event.target)) {
+    profileMenu.classList.remove('visible');
+  }
+});
+
+document.querySelector('[data-signout]').addEventListener('click', signOut);
+
+saveButtons.forEach((button) => {
+  button.addEventListener('click', () => toggleSaveButton(button));
+});
+
+if (mySavedJobsList) {
+  mySavedJobsList.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-remove-job]');
+    if (!button) return;
+
+    const title = button.dataset.removeJob;
+    savedJobs = savedJobs.filter((job) => job.title !== title);
+    renderSavedJobs();
+
+    const matchingJobButton = document.querySelector(`[data-save-title="${title}"]`);
+    if (matchingJobButton) {
+      matchingJobButton.classList.remove('saved');
+      matchingJobButton.textContent = '♡';
+      matchingJobButton.setAttribute('aria-label', `Save ${title}`);
+    }
+  });
+}
+
+if (profileForm) {
+  profileForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const fullName = document.getElementById('profile-name').value.trim() || 'Jordan Davis';
+    const email = document.getElementById('profile-email').value.trim() || 'jordan@example.com';
+    const location = document.getElementById('profile-location').value.trim() || 'New York, NY';
+
+    updateUserProfile(fullName, email);
+    const locationField = document.getElementById('profile-location');
+    if (locationField) {
+      locationField.value = location;
+    }
+    profileStatus.textContent = 'Your profile was updated successfully.';
+  });
+}
+
+function initSavedJobsFromButtons() {
+  saveButtons.forEach((button) => {
+    const title = button.dataset.saveTitle;
+    const company = button.dataset.company;
+    const existing = savedJobs.some((job) => job.title === title && job.company === company);
+    if (existing) {
+      button.classList.add('saved');
+      button.textContent = '♥';
+      button.setAttribute('aria-label', `Unsave ${title}`);
+    }
+  });
+}
+
+renderSavedJobs();
+initSavedJobsFromButtons();
+setActiveView(activeView);
+showLanding();
