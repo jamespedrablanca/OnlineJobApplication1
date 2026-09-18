@@ -1,13 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // =====================================================
+    // MAIN ELEMENTS
+    // =====================================================
+
     const landingPage = document.querySelector(".landing-page");
     const dashboard = document.querySelector("#dashboard");
     const authBackdrop = document.querySelector("[data-auth-backdrop]");
 
     const savedUser = localStorage.getItem("careerlyUser");
 
-    landingPage.hidden = true;
-    dashboard.hidden = true;
+
+    // Hide original screens while JavaScript loads
+    if (landingPage) landingPage.hidden = true;
+    if (dashboard) dashboard.hidden = true;
     if (authBackdrop) authBackdrop.hidden = true;
 
 
@@ -16,6 +22,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================================
 
     function createSignupScreen() {
+
+        // Prevent duplicate signup screens
+        const existingScreen =
+            document.querySelector("#signup-screen");
+
+        if (existingScreen) {
+            return;
+        }
+
 
         const screen = document.createElement("div");
 
@@ -31,7 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <div class="signup-content">
 
-                    <p class="signup-eyebrow">WELCOME TO CAREERLY</p>
+                    <p class="signup-eyebrow">
+                        WELCOME TO CAREERLY
+                    </p>
 
                     <h1>Create your account.</h1>
 
@@ -42,28 +59,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     <form id="signup-screen-form">
 
-                        <label>Full name</label>
+                        <label for="screen-name">
+                            Full name
+                        </label>
+
                         <input
                             type="text"
                             id="screen-name"
                             placeholder="Jordan Davis"
+                            autocomplete="name"
                             required
                         >
 
-                        <label>Email address</label>
+                        <label for="screen-email">
+                            Email address
+                        </label>
+
                         <input
                             type="email"
                             id="screen-email"
                             placeholder="you@example.com"
+                            autocomplete="email"
                             required
                         >
 
-                        <label>Password</label>
+                        <label for="screen-password">
+                            Password
+                        </label>
+
                         <input
                             type="password"
                             id="screen-password"
                             placeholder="At least 6 characters"
                             minlength="6"
+                            autocomplete="new-password"
                             required
                         >
 
@@ -79,26 +108,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
 
                 <div class="signup-decoration">
+
                     <div class="signup-sun"></div>
+
                     <div class="signup-card signup-card-back"></div>
 
                     <div class="signup-card signup-card-front">
-                        <small>YOUR NEXT ROLE</small>
+
+                        <small>
+                            YOUR NEXT ROLE
+                        </small>
+
                         <strong>
                             Senior Product<br>
                             Designer
                         </strong>
-                        <span>Lumen Studio · New York</span>
+
+                        <span>
+                            Lumen Studio · New York
+                        </span>
+
                     </div>
 
-                    <span class="signup-star">✦</span>
+                    <span class="signup-star">
+                        ✦
+                    </span>
+
                 </div>
 
             </div>
         `;
 
 
+        // =================================================
+        // SIGNUP SCREEN CSS
+        // =================================================
+
         const style = document.createElement("style");
+
+        style.id = "signup-screen-style";
 
         style.textContent = `
 
@@ -122,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 margin: auto;
                 padding: 45px;
                 position: relative;
+                box-sizing: border-box;
             }
 
             .signup-logo {
@@ -214,6 +263,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursor: pointer;
                 font-size: 11px;
                 font-weight: 700;
+                transition: .2s ease;
+            }
+
+            #signup-screen-form button:hover {
+                background: #226a4f;
+                transform: translateY(-1px);
             }
 
             #signup-screen-form button span {
@@ -335,36 +390,67 @@ document.addEventListener("DOMContentLoaded", () => {
         // SIGNUP FORM
         // =================================================
 
-        const form = document.querySelector("#signup-screen-form");
+        const form =
+            document.querySelector("#signup-screen-form");
+
+        const nameInput =
+            document.querySelector("#screen-name");
+
+        const emailInput =
+            document.querySelector("#screen-email");
+
+        const passwordInput =
+            document.querySelector("#screen-password");
+
+        const error =
+            document.querySelector("#signup-error");
+
 
         form.addEventListener("submit", (event) => {
 
             event.preventDefault();
 
-            const name = document
-                .querySelector("#screen-name")
-                .value
-                .trim();
 
-            const email = document
-                .querySelector("#screen-email")
-                .value
-                .trim();
-
-            const password = document
-                .querySelector("#screen-password")
-                .value;
-
-            const error = document.querySelector("#signup-error");
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
 
-            if (!name || !email || password.length < 6) {
+            // Validation
+            if (name.length < 2) {
+
                 error.textContent =
-                    "Please fill in all fields correctly.";
+                    "Please enter your full name.";
+
+                nameInput.focus();
+
                 return;
             }
 
 
+            if (!emailInput.checkValidity()) {
+
+                error.textContent =
+                    "Please enter a valid email address.";
+
+                emailInput.focus();
+
+                return;
+            }
+
+
+            if (password.length < 6) {
+
+                error.textContent =
+                    "Password must be at least 6 characters.";
+
+                passwordInput.focus();
+
+                return;
+            }
+
+
+            // Create user object
             const user = {
                 name: name,
                 email: email
@@ -384,7 +470,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Show dashboard
             showDashboard(user);
-
         });
     }
 
@@ -395,20 +480,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function showDashboard(user) {
 
+        if (!dashboard) return;
+
         dashboard.hidden = false;
 
         updateUser(user);
 
         updateLoggedInNavigation();
 
+        setupDashboardFunctions();
     }
 
 
     // =====================================================
-    // UPDATE USER NAME / EMAIL / AVATAR
+    // UPDATE USER INFORMATION
     // =====================================================
 
     function updateUser(user) {
+
+        if (!user) return;
+
 
         const nameElement =
             document.querySelector("[data-user-name]");
@@ -439,11 +530,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
+        // Generate initials
         const initials = user.name
-            .split(" ")
+            .split(/\s+/)
             .filter(Boolean)
             .slice(0, 2)
-            .map(word => word[0].toUpperCase())
+            .map(word => word.charAt(0).toUpperCase())
             .join("");
 
 
@@ -463,32 +555,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateLoggedInNavigation() {
 
-        // Hide Sign in / Create account buttons
         const guestActions =
             document.querySelector(".guest-actions");
 
+        const memberActions =
+            document.querySelector(".member-actions");
+
+        const topActions =
+            document.querySelector(".top-actions");
+
+
+        // Hide Sign In / Create Account
         if (guestActions) {
             guestActions.style.display = "none";
         }
 
 
-        // Create a Sign Out button
-        const topActions =
-            document.querySelector(".top-actions");
+        // Show member area
+        if (memberActions) {
+            memberActions.style.display = "flex";
+        }
+
 
         if (!topActions) return;
 
 
+        // Prevent duplicate Sign Out buttons
         let signoutButton =
             document.querySelector("#top-signout");
 
 
         if (!signoutButton) {
 
-            signoutButton = document.createElement("button");
+            signoutButton =
+                document.createElement("button");
 
             signoutButton.id = "top-signout";
             signoutButton.textContent = "Sign out";
+
+            signoutButton.type = "button";
 
             signoutButton.style.cssText = `
                 border: none;
@@ -502,18 +607,352 @@ document.addEventListener("DOMContentLoaded", () => {
 
             topActions.appendChild(signoutButton);
 
+            signoutButton.addEventListener(
+                "click",
+                signOut
+            );
+        }
+    }
 
-            signoutButton.addEventListener("click", signOut);
+
+    // =====================================================
+    // DASHBOARD FUNCTIONS
+    // =====================================================
+
+    function setupDashboardFunctions() {
+
+
+        // =================================================
+        // SAVE JOBS
+        // =================================================
+
+        const saveButtons =
+            document.querySelectorAll(".save-button");
+
+
+        saveButtons.forEach(button => {
+
+            if (button.dataset.jsReady === "true") {
+                return;
+            }
+
+            button.dataset.jsReady = "true";
+
+
+            button.addEventListener("click", () => {
+
+                button.classList.toggle("saved");
+
+
+                if (button.classList.contains("saved")) {
+
+                    button.textContent = "♥";
+
+                    button.style.color = "#ec765e";
+
+                } else {
+
+                    button.textContent = "♡";
+
+                    button.style.color = "";
+                }
+            });
+        });
+
+
+        // =================================================
+        // APPLY BUTTONS
+        // =================================================
+
+        const applyButtons =
+            document.querySelectorAll(".apply-button");
+
+
+        applyButtons.forEach(button => {
+
+            if (button.dataset.jsReady === "true") {
+                return;
+            }
+
+            button.dataset.jsReady = "true";
+
+
+            button.addEventListener("click", () => {
+
+                if (button.classList.contains("applied")) {
+
+                    button.textContent = "Applied ✓";
+
+                    return;
+                }
+
+
+                button.classList.add("applied");
+
+                button.textContent = "Applied ✓";
+
+                button.style.background = "#6b9f83";
+
+                button.style.cursor = "default";
+            });
+        });
+
+
+        // =================================================
+        // PROFILE MENU
+        // =================================================
+
+        const profileButton =
+            document.querySelector("[data-profile-menu]");
+
+        const profileMenu =
+            document.querySelector(".profile-menu");
+
+
+        if (profileButton && profileMenu) {
+
+            if (profileButton.dataset.jsReady !== "true") {
+
+                profileButton.dataset.jsReady = "true";
+
+
+                profileButton.addEventListener(
+                    "click",
+                    (event) => {
+
+                        event.stopPropagation();
+
+                        profileMenu.classList.toggle("visible");
+                    }
+                );
+            }
         }
 
 
-        // Show member actions if they exist
-        const memberActions =
-            document.querySelector(".member-actions");
+        // Close profile menu when clicking elsewhere
+        if (!document.body.dataset.profileListener) {
 
-        if (memberActions) {
-            memberActions.style.display = "flex";
+            document.body.dataset.profileListener = "true";
+
+
+            document.addEventListener("click", () => {
+
+                const menu =
+                    document.querySelector(".profile-menu");
+
+                if (menu) {
+                    menu.classList.remove("visible");
+                }
+            });
         }
+
+
+        // =================================================
+        // JOB SEARCH
+        // =================================================
+
+        const searchButton =
+            document.querySelector(".search-button");
+
+        const searchInput =
+            document.querySelector(
+                '.search-field input[type="search"]'
+            );
+
+
+        if (searchButton && searchInput) {
+
+            if (searchButton.dataset.jsReady !== "true") {
+
+                searchButton.dataset.jsReady = "true";
+
+
+                searchButton.addEventListener(
+                    "click",
+                    searchJobs
+                );
+
+
+                searchInput.addEventListener(
+                    "keydown",
+                    (event) => {
+
+                        if (event.key === "Enter") {
+
+                            event.preventDefault();
+
+                            searchJobs();
+                        }
+                    }
+                );
+            }
+        }
+
+
+        // =================================================
+        // JOB FILTERS
+        // =================================================
+
+        const filters =
+            document.querySelectorAll(".filter");
+
+
+        filters.forEach(filter => {
+
+            if (filter.dataset.jsReady === "true") {
+                return;
+            }
+
+            filter.dataset.jsReady = "true";
+
+
+            filter.addEventListener("click", () => {
+
+                filters.forEach(item =>
+                    item.classList.remove("active")
+                );
+
+                filter.classList.add("active");
+
+                filterJobs(filter.textContent.trim());
+            });
+        });
+
+
+        // =================================================
+        // EXISTING SIGN OUT BUTTON
+        // =================================================
+
+        const existingSignout =
+            document.querySelector("[data-signout]");
+
+
+        if (existingSignout) {
+
+            if (existingSignout.dataset.jsReady !== "true") {
+
+                existingSignout.dataset.jsReady = "true";
+
+                existingSignout.addEventListener(
+                    "click",
+                    (event) => {
+
+                        event.preventDefault();
+
+                        signOut();
+                    }
+                );
+            }
+        }
+    }
+
+
+    // =====================================================
+    // SEARCH JOBS
+    // =====================================================
+
+    function searchJobs() {
+
+        const searchInput =
+            document.querySelector(
+                '.search-field input[type="search"]'
+            );
+
+        const jobCards =
+            document.querySelectorAll(".job-card");
+
+
+        if (!searchInput) return;
+
+
+        const searchTerm =
+            searchInput.value.trim().toLowerCase();
+
+
+        jobCards.forEach(card => {
+
+            const text =
+                card.textContent.toLowerCase();
+
+
+            if (!searchTerm || text.includes(searchTerm)) {
+
+                card.style.display = "";
+
+            } else {
+
+                card.style.display = "none";
+            }
+        });
+    }
+
+
+    // =====================================================
+    // FILTER JOBS
+    // =====================================================
+
+    function filterJobs(filterName) {
+
+        const jobCards =
+            document.querySelectorAll(".job-card");
+
+
+        const filter =
+            filterName.toLowerCase();
+
+
+        jobCards.forEach(card => {
+
+            const text =
+                card.textContent.toLowerCase();
+
+
+            if (
+                filter.includes("all jobs") ||
+                filter.includes("filters")
+            ) {
+
+                card.style.display = "";
+
+                return;
+            }
+
+
+            if (filter.includes("remote")) {
+
+                card.style.display =
+                    text.includes("remote")
+                        ? ""
+                        : "none";
+
+                return;
+            }
+
+
+            if (filter.includes("on-site")) {
+
+                card.style.display =
+                    text.includes("on-site")
+                        ? ""
+                        : "none";
+
+                return;
+            }
+
+
+            if (filter.includes("full-time")) {
+
+                card.style.display =
+                    text.includes("full-time")
+                        ? ""
+                        : "none";
+
+                return;
+            }
+
+
+            card.style.display = "";
+        });
     }
 
 
@@ -523,17 +962,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function signOut() {
 
+        // Delete saved account
         localStorage.removeItem("careerlyUser");
 
-        dashboard.hidden = true;
 
-        const signupScreen =
-            document.querySelector("#signup-screen");
-
-        if (signupScreen) {
-            signupScreen.remove();
+        // Hide dashboard
+        if (dashboard) {
+            dashboard.hidden = true;
         }
 
+
+        // Close profile menu
+        const profileMenu =
+            document.querySelector(".profile-menu");
+
+        if (profileMenu) {
+            profileMenu.classList.remove("visible");
+        }
+
+
+        // Remove top Sign Out button
         const signoutButton =
             document.querySelector("#top-signout");
 
@@ -541,23 +989,336 @@ document.addEventListener("DOMContentLoaded", () => {
             signoutButton.remove();
         }
 
+
+        // Reset guest buttons
+        const guestActions =
+            document.querySelector(".guest-actions");
+
+        if (guestActions) {
+            guestActions.style.display = "";
+        }
+
+
+        // Remove old signup screen
+        const signupScreen =
+            document.querySelector("#signup-screen");
+
+        if (signupScreen) {
+            signupScreen.remove();
+        }
+
+
+        // Show signup screen
         createSignupScreen();
     }
 
 
     // =====================================================
-    // CONNECT EXISTING SIGN OUT BUTTON
+    // EXISTING AUTH MODAL
     // =====================================================
 
-    const existingSignout =
-        document.querySelector("[data-signout]");
+    function setupExistingAuth() {
 
-    if (existingSignout) {
+        if (!authBackdrop) return;
 
-        existingSignout.addEventListener(
+
+        const openButtons =
+            document.querySelectorAll("[data-open-auth]");
+
+        const closeButton =
+            document.querySelector("[data-close-auth]");
+
+        const tabs =
+            document.querySelectorAll("[data-auth-tab]");
+
+        const forms =
+            document.querySelectorAll("[data-auth-form]");
+
+
+        // -----------------------------------------------
+        // Open modal
+        // -----------------------------------------------
+
+        openButtons.forEach(button => {
+
+            if (button.dataset.jsReady === "true") {
+                return;
+            }
+
+            button.dataset.jsReady = "true";
+
+
+            button.addEventListener("click", () => {
+
+                const mode =
+                    button.dataset.openAuth;
+
+
+                authBackdrop.hidden = false;
+
+                switchAuthTab(mode);
+            });
+        });
+
+
+        // -----------------------------------------------
+        // Close modal
+        // -----------------------------------------------
+
+        if (closeButton) {
+
+            closeButton.addEventListener(
+                "click",
+                () => {
+
+                    authBackdrop.hidden = true;
+                }
+            );
+        }
+
+
+        // -----------------------------------------------
+        // Click outside modal
+        // -----------------------------------------------
+
+        authBackdrop.addEventListener(
             "click",
-            signOut
+            (event) => {
+
+                if (event.target === authBackdrop) {
+
+                    authBackdrop.hidden = true;
+                }
+            }
         );
+
+
+        // -----------------------------------------------
+        // Switch tabs
+        // -----------------------------------------------
+
+        tabs.forEach(tab => {
+
+            tab.addEventListener("click", () => {
+
+                switchAuthTab(
+                    tab.dataset.authTab
+                );
+            });
+        });
+
+
+        // -----------------------------------------------
+        // Existing forms
+        // -----------------------------------------------
+
+        forms.forEach(form => {
+
+            if (form.dataset.jsReady === "true") {
+                return;
+            }
+
+            form.dataset.jsReady = "true";
+
+
+            form.addEventListener(
+                "submit",
+                (event) => {
+
+                    event.preventDefault();
+
+                    const mode =
+                        form.dataset.authForm;
+
+
+                    if (mode === "signin") {
+
+                        handleModalSignIn(form);
+
+                    } else {
+
+                        handleModalSignup(form);
+                    }
+                }
+            );
+        });
+    }
+
+
+    // =====================================================
+    // SWITCH AUTH TAB
+    // =====================================================
+
+    function switchAuthTab(mode) {
+
+        const tabs =
+            document.querySelectorAll("[data-auth-tab]");
+
+        const forms =
+            document.querySelectorAll("[data-auth-form]");
+
+        const title =
+            document.querySelector("#auth-title");
+
+
+        tabs.forEach(tab => {
+
+            tab.classList.toggle(
+                "active",
+                tab.dataset.authTab === mode
+            );
+        });
+
+
+        forms.forEach(form => {
+
+            form.hidden =
+                form.dataset.authForm !== mode;
+        });
+
+
+        if (title) {
+
+            title.textContent =
+                mode === "signup"
+                    ? "Create your account."
+                    : "Find work that fits you.";
+        }
+    }
+
+
+    // =====================================================
+    // MODAL SIGN IN
+    // =====================================================
+
+    function handleModalSignIn(form) {
+
+        const email =
+            form.querySelector(
+                'input[type="email"]'
+            ).value.trim();
+
+        const password =
+            form.querySelector(
+                'input[type="password"]'
+            ).value;
+
+
+        if (!email || password.length < 6) {
+            showAuthStatus(
+                "Please enter a valid email and password."
+            );
+            return;
+        }
+
+
+        const existingUser =
+            JSON.parse(
+                localStorage.getItem("careerlyUser") || "null"
+            );
+
+
+        const user = existingUser || {
+            name: email.split("@")[0],
+            email: email
+        };
+
+
+        localStorage.setItem(
+            "careerlyUser",
+            JSON.stringify(user)
+        );
+
+
+        authBackdrop.hidden = true;
+
+        showDashboard(user);
+    }
+
+
+    // =====================================================
+    // MODAL SIGNUP
+    // =====================================================
+
+    function handleModalSignup(form) {
+
+        const name =
+            form.querySelector(
+                'input[type="text"]'
+            ).value.trim();
+
+        const email =
+            form.querySelector(
+                'input[type="email"]'
+            ).value.trim();
+
+        const password =
+            form.querySelector(
+                'input[type="password"]'
+            ).value;
+
+
+        if (name.length < 2) {
+
+            showAuthStatus(
+                "Please enter your full name."
+            );
+
+            return;
+        }
+
+
+        if (!email ||
+            !form.querySelector('input[type="email"]').checkValidity()) {
+
+            showAuthStatus(
+                "Please enter a valid email address."
+            );
+
+            return;
+        }
+
+
+        if (password.length < 6) {
+
+            showAuthStatus(
+                "Password must be at least 6 characters."
+            );
+
+            return;
+        }
+
+
+        const user = {
+            name: name,
+            email: email
+        };
+
+
+        localStorage.setItem(
+            "careerlyUser",
+            JSON.stringify(user)
+        );
+
+
+        authBackdrop.hidden = true;
+
+        showDashboard(user);
+    }
+
+
+    // =====================================================
+    // AUTH STATUS MESSAGE
+    // =====================================================
+
+    function showAuthStatus(message) {
+
+        const status =
+            document.querySelector(".auth-status");
+
+        if (!status) return;
+
+        status.textContent = message;
     }
 
 
@@ -565,23 +1326,51 @@ document.addEventListener("DOMContentLoaded", () => {
     // START APPLICATION
     // =====================================================
 
+    setupExistingAuth();
+
+
     if (!savedUser) {
 
-        // New user
+        // -----------------------------------------------
+        // NEW USER
+        // -----------------------------------------------
+
         createSignupScreen();
 
     } else {
 
-        // Returning user
+        // -----------------------------------------------
+        // RETURNING USER
+        // -----------------------------------------------
+
         try {
 
-            const user = JSON.parse(savedUser);
+            const user =
+                JSON.parse(savedUser);
 
-            showDashboard(user);
+
+            if (
+                user &&
+                user.name &&
+                user.email
+            ) {
+
+                showDashboard(user);
+
+            } else {
+
+                localStorage.removeItem(
+                    "careerlyUser"
+                );
+
+                createSignupScreen();
+            }
 
         } catch {
 
-            localStorage.removeItem("careerlyUser");
+            localStorage.removeItem(
+                "careerlyUser"
+            );
 
             createSignupScreen();
         }
